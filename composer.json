@@ -1,0 +1,19 @@
+{
+  "name": "websk/php-logger",
+  "require": {
+    "ext-mbstring": "*",
+    "slim/slim": "^3.0",
+    "websk/php-config": "1.0.*",
+    "websk/php-crud": "1.0.*",
+    "websk/php-entity": "1.0.*",
+    "websk/php-slim": "1.0.*",
+    "websk/php-utils": "1.0.*",
+    "websk/php-view": "1.0.*",
+    "o-log/php-lib": "1.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "": "src/"
+    }
+  }
+}
