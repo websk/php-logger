@@ -5,12 +5,11 @@ namespace WebSK\Logger\RequestHandlers;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use WebSK\Config\ConfWrapper;
+use WebSK\Logger\LoggerConfig;
 use WebSK\Views\LayoutDTO;
 use WebSK\Slim\RequestHandlers\BaseHandler;
 use WebSK\Utils\HTTP;
 use WebSK\Views\BreadcrumbItemDTO;
-use WebSK\Logger\LoggerConstants;
 use WebSK\Logger\LoggerRoutes;
 use WebSK\Logger\LoggerServiceProvider;
 use WebSK\Views\PhpRender;
@@ -43,7 +42,7 @@ class EntryEditHandler extends BaseHandler
         $layout_dto->setTitle(date('Y.d.m H:i', $entry_obj->getCreatedAtTs()));
         $layout_dto->setContentHtml($html);
         $breadcrumbs_arr = [
-            new BreadcrumbItemDTO('Главная', LoggerConstants::ADMIN_ROOT_PATH),
+            new BreadcrumbItemDTO('Главная', LoggerConfig::getSkifMainPageUrl()),
             new BreadcrumbItemDTO(
                 'Журналы',
                 $this->pathFor(LoggerRoutes::ROUTE_NAME_ADMIN_LOGGER_ENTRIES_LIST)
@@ -58,7 +57,7 @@ class EntryEditHandler extends BaseHandler
         ];
         $layout_dto->setBreadcrumbsDtoArr($breadcrumbs_arr);
 
-        return PhpRender::renderLayout($response, ConfWrapper::value('layout.admin'), $layout_dto);
+        return PhpRender::renderLayout($response, LoggerConfig::getSkifLayout(), $layout_dto);
     }
 
     /**

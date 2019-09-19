@@ -5,7 +5,7 @@ namespace WebSK\Logger\RequestHandlers;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use WebSK\Config\ConfWrapper;
+use WebSK\Logger\LoggerConfig;
 use WebSK\Views\LayoutDTO;
 use WebSK\Slim\RequestHandlers\BaseHandler;
 use WebSK\Views\BreadcrumbItemDTO;
@@ -16,7 +16,6 @@ use WebSK\CRUD\Table\Widgets\CRUDTableWidgetText;
 use WebSK\CRUD\Table\Widgets\CRUDTableWidgetTextWithLink;
 use WebSK\CRUD\Table\Widgets\CRUDTableWidgetTimestamp;
 use WebSK\Logger\Entry\LoggerEntry;
-use WebSK\Logger\LoggerConstants;
 use WebSK\Logger\LoggerRoutes;
 use WebSK\Views\PhpRender;
 
@@ -36,24 +35,26 @@ class ObjectEntriesListHandler extends BaseHandler
             [
                 new CRUDTableColumn(
                     'Объект',
-                    new CRUDTableWidgetText('{this->object_full_id}')
+                    new CRUDTableWidgetText(LoggerEntry::_OBJECT_FULLID)
                 ),
                 new CRUDTableColumn(
                     'Дата создания',
-                    new CRUDTableWidgetTimestamp('{this->created_at_ts}')
+                    new CRUDTableWidgetTimestamp(LoggerEntry::_CREATED_AT_TS)
                 ),
                 new CRUDTableColumn(
                     'Пользователь',
                     new CRUDTableWidgetTextWithLink(
-                        '{this->user_full_id}',
-                        $this->pathFor(LoggerRoutes::ROUTE_NAME_ADMIN_LOGGER_ENTRY_EDIT, ['entry_id' => '{this->id}'])
+                        LoggerEntry::_USER_FULLID,
+                        function (LoggerEntry $logger_entry) {
+                            return $this->pathFor(LoggerRoutes::ROUTE_NAME_ADMIN_LOGGER_ENTRY_EDIT, ['entry_id' => $logger_entry->getId()]);
+                        }
                     )
                 )
             ],
             [
                 new CRUDTableFilterEqualInvisible('object_full_id', $object_full_id)
             ],
-            'created_at_ts desc'
+            LoggerEntry::_CREATED_AT_TS . ' DESC'
         );
 
         $crud_table_response = $crud_table_obj->processRequest($request, $response);
@@ -65,7 +66,7 @@ class ObjectEntriesListHandler extends BaseHandler
         $layout_dto->setTitle($object_full_id);
         $layout_dto->setContentHtml($crud_table_obj->html($request));
         $breadcrumbs_arr = [
-            new BreadcrumbItemDTO('Главная', LoggerConstants::ADMIN_ROOT_PATH),
+            new BreadcrumbItemDTO('Главная', LoggerConfig::getSkifMainPageUrl()),
             new BreadcrumbItemDTO(
                 'Журналы',
                 $this->pathFor(LoggerRoutes::ROUTE_NAME_ADMIN_LOGGER_ENTRIES_LIST)
@@ -73,6 +74,6 @@ class ObjectEntriesListHandler extends BaseHandler
         ];
         $layout_dto->setBreadcrumbsDtoArr($breadcrumbs_arr);
 
-        return PhpRender::renderLayout($response, ConfWrapper::value('layout.admin'), $layout_dto);
+        return PhpRender::renderLayout($response, LoggerConfig::getSkifLayout(), $layout_dto);
     }
 }

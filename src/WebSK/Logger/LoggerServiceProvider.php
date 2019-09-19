@@ -78,4 +78,13 @@ class LoggerServiceProvider
     {
         return $container[LoggerEntry::ENTITY_SERVICE_CONTAINER_ID];
     }
+
+    /**
+     * @param ContainerInterface $container
+     * @return DBService
+     */
+    public static function getDBService(ContainerInterface $container)
+    {
+        return $container[self::DB_SERVICE_CONTAINER_ID];
+    }
 }

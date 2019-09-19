@@ -31,7 +31,7 @@ class LoggerRoutes
                 $app->map([HTTP::METHOD_GET, HTTP::METHOD_POST], '/{entry_id:\d+}', EntryEditHandler::class)
                     ->setName(self::ROUTE_NAME_ADMIN_LOGGER_ENTRY_EDIT);
             });
-            $app->map([HTTP::METHOD_GET, HTTP::METHOD_POST], 'objectentries/{object_full_id}', ObjectEntriesListHandler::class)
+            $app->map([HTTP::METHOD_GET, HTTP::METHOD_POST], '/objectentries/{object_full_id:.+}', ObjectEntriesListHandler::class)
                 ->setName(self::ROUTE_NAME_ADMIN_LOGGER_OBJECT_ENTRIES_LIST);
         });
     }
