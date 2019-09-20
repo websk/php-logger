@@ -42,20 +42,4 @@ class LoggerConfig
     {
         return ConfWrapper::value('logger.skif_main_page_url', '/admin');
     }
-
-    /**
-     * @return string
-     */
-    public static function getSalt(): string
-    {
-        return ConfWrapper::value('logger.salt', ConfWrapper::value('salt'));
-    }
-
-    /**
-     * @return null|int
-     */
-    public static function getDefaultRoleId(): ?int
-    {
-        return ConfWrapper::value('logger.default_user_role_id', null);
-    }
 }
