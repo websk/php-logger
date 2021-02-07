@@ -66,7 +66,7 @@ class ObjectEntriesListHandler extends BaseHandler
         $layout_dto->setTitle($object_full_id);
         $layout_dto->setContentHtml($crud_table_obj->html($request));
         $breadcrumbs_arr = [
-            new BreadcrumbItemDTO('Главная', LoggerConfig::getSkifMainPageUrl()),
+            new BreadcrumbItemDTO('Главная', LoggerConfig::getAdminMainPageUrl()),
             new BreadcrumbItemDTO(
                 'Журналы',
                 $this->pathFor(LoggerRoutes::ROUTE_NAME_ADMIN_LOGGER_ENTRIES_LIST)
@@ -74,6 +74,6 @@ class ObjectEntriesListHandler extends BaseHandler
         ];
         $layout_dto->setBreadcrumbsDtoArr($breadcrumbs_arr);
 
-        return PhpRender::renderLayout($response, LoggerConfig::getSkifLayout(), $layout_dto);
+        return PhpRender::renderLayout($response, LoggerConfig::getAdminLayout(), $layout_dto);
     }
 }

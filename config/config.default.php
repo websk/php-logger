@@ -5,7 +5,7 @@ return [
         'displayErrorDetails' => false,
         'cache' => [
             'engine' => \WebSK\Cache\Engines\Memcache::class,
-            'cache_key_prefix' => 'skif',
+            'cache_key_prefix' => 'websk_logger',
             'servers' => [
                 [
                     'host' => 'localhost',
@@ -30,9 +30,9 @@ return [
         'site_email' => 'support@websk.ru',
         'logger' => [
             'layout_main' => '/var/www/php-logger/views/layouts/layout.main.tpl.php',
-            'layout_skif' => '/var/www/php-logger/views/layouts/layout.main.tpl.php',
+            'layout_admin' => '/var/www/php-logger/views/layouts/layout.main.tpl.php',
             'main_page_url' => '/',
-            'skif_main_page_url' => '/admin/logger/entry'
+            'admin_main_page_url' => '/admin/logger/entry'
         ]
     ],
 ];

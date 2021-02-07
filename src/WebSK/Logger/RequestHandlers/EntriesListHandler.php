@@ -73,10 +73,10 @@ class EntriesListHandler extends BaseHandler
         $layout_dto->setTitle('Журналы');
         $layout_dto->setContentHtml($crud_table_obj->html($request));
         $breadcrumbs_arr = [
-            new BreadcrumbItemDTO('Главная', LoggerConfig::getSkifMainPageUrl()),
+            new BreadcrumbItemDTO('Главная', LoggerConfig::getAdminMainPageUrl()),
         ];
         $layout_dto->setBreadcrumbsDtoArr($breadcrumbs_arr);
 
-        return PhpRender::renderLayout($response, LoggerConfig::getSkifLayout(), $layout_dto);
+        return PhpRender::renderLayout($response, LoggerConfig::getAdminLayout(), $layout_dto);
     }
 }

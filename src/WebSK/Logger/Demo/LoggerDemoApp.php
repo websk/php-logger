@@ -1,6 +1,6 @@
 <?php
 
-namespace WebSK\Logger;
+namespace WebSK\Logger\Demo;
 
 use Slim\App;
 use Slim\Handlers\Strategies\RequestResponseArgs;
@@ -9,12 +9,14 @@ use Slim\Http\Response;
 use WebSK\Cache\CacheServiceProvider;
 use WebSK\CRUD\CRUDServiceProvider;
 use WebSK\DB\DBWrapper;
+use WebSK\Logger\LoggerRoutes;
+use WebSK\Logger\LoggerServiceProvider;
 use WebSK\Slim\Facade;
 use WebSK\Slim\Router;
 
 /**
  * Class LoggerDemoApp
- * @package WebSK\Auth
+ * @package WebSK\Logger\Demo
  */
 class LoggerDemoApp extends App
 {

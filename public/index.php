@@ -9,5 +9,5 @@ $config = require_once $config_path;
 
 ConfWrapper::setConfig($config['settings']);
 
-$app = new WebSK\Logger\LoggerDemoApp($config);
+$app = new \WebSK\Logger\Demo\LoggerDemoApp($config);
 $app->run();

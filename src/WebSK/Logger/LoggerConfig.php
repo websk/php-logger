@@ -6,7 +6,7 @@ use WebSK\Config\ConfWrapper;
 
 /**
  * Class LoggerConfig
- * @package WebSK\Auth
+ * @package WebSK\Logger
  */
 class LoggerConfig
 {
@@ -30,16 +30,16 @@ class LoggerConfig
     /**
      * @return string
      */
-    public static function getSkifLayout(): string
+    public static function getAdminLayout(): string
     {
-        return ConfWrapper::value('logger.layout_skif', ConfWrapper::value('skif.layout'));
+        return ConfWrapper::value('logger.layout_admin', ConfWrapper::value('layout.admin'));
     }
 
     /**
      * @return string
      */
-    public static function getSkifMainPageUrl(): string
+    public static function getAdminMainPageUrl(): string
     {
-        return ConfWrapper::value('logger.skif_main_page_url', '/admin');
+        return ConfWrapper::value('logger.admin_main_page_url', '/admin');
     }
 }
