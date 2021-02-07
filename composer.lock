@@ -1467,16 +1467,16 @@
         },
         {
             "name": "websk/php-crud",
-            "version": "1.2.1",
+            "version": "1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/websk/php-crud.git",
-                "reference": "c1431267830b53c3d46662bfceb5fdb75a584a72"
+                "reference": "325a2c5ff7c57bfc0bdb0db39481d469769940e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/websk/php-crud/zipball/c1431267830b53c3d46662bfceb5fdb75a584a72",
-                "reference": "c1431267830b53c3d46662bfceb5fdb75a584a72",
+                "url": "https://api.github.com/repos/websk/php-crud/zipball/325a2c5ff7c57bfc0bdb0db39481d469769940e3",
+                "reference": "325a2c5ff7c57bfc0bdb0db39481d469769940e3",
                 "shasum": ""
             },
             "require": {
@@ -1502,9 +1502,9 @@
             "notification-url": "https://packagist.org/downloads/",
             "support": {
                 "issues": "https://github.com/websk/php-crud/issues",
-                "source": "https://github.com/websk/php-crud/tree/1.2.1"
+                "source": "https://github.com/websk/php-crud/tree/1.2.2"
             },
-            "time": "2021-02-05T12:41:20+00:00"
+            "time": "2021-02-07T09:03:23+00:00"
         },
         {
             "name": "websk/php-db",
