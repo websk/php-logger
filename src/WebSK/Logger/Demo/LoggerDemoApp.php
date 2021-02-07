@@ -9,6 +9,7 @@ use Slim\Http\Response;
 use WebSK\Cache\CacheServiceProvider;
 use WebSK\CRUD\CRUDServiceProvider;
 use WebSK\DB\DBWrapper;
+use WebSK\Logger\LoggerConfig;
 use WebSK\Logger\LoggerRoutes;
 use WebSK\Logger\LoggerServiceProvider;
 use WebSK\Slim\Facade;
@@ -46,6 +47,9 @@ class LoggerDemoApp extends App
 
         // Demo routing. Redirects
         $this->get('/', function (Request $request, Response $response) {
+            return $response->withRedirect(Router::pathFor(LoggerRoutes::ROUTE_NAME_ADMIN_LOGGER_ENTRIES_LIST));
+        });
+        $this->get(LoggerConfig::getAdminMainPageUrl(), function (Request $request, Response $response) {
             return $response->withRedirect(Router::pathFor(LoggerRoutes::ROUTE_NAME_ADMIN_LOGGER_ENTRIES_LIST));
         });
 

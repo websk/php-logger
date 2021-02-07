@@ -32,7 +32,7 @@ return [
             'layout_main' => '/var/www/php-logger/views/layouts/layout.main.tpl.php',
             'layout_admin' => '/var/www/php-logger/views/layouts/layout.main.tpl.php',
             'main_page_url' => '/',
-            'admin_main_page_url' => '/admin/logger/entry'
+            'admin_main_page_url' => '/admin'
         ]
     ],
 ];
