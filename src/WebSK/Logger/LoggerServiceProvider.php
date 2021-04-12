@@ -17,6 +17,7 @@ use WebSK\Logger\Entry\LoggerEntryService;
  */
 class LoggerServiceProvider
 {
+    const DUMP_FILE_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'dumps' . DIRECTORY_SEPARATOR . 'db_logger.sql';
     const DB_SERVICE_CONTAINER_ID = 'logger.db_service';
     const DB_ID = 'db_logger';
 
