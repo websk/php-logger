@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2cb29c1289df7afc3ba1761560652cb4",
+    "content-hash": "081256aa784c7e03d7c3b8016ad81181",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.178.1",
+            "version": "3.178.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "45692b97e12a2eed540c0afd106f143aad15e622"
+                "reference": "cfeed02f14b0fb3cba8bb75f2ae28cb8c9807369"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/45692b97e12a2eed540c0afd106f143aad15e622",
-                "reference": "45692b97e12a2eed540c0afd106f143aad15e622",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/cfeed02f14b0fb3cba8bb75f2ae28cb8c9807369",
+                "reference": "cfeed02f14b0fb3cba8bb75f2ae28cb8c9807369",
                 "shasum": ""
             },
             "require": {
@@ -92,9 +92,71 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.178.1"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.178.3"
             },
-            "time": "2021-04-09T18:13:02+00:00"
+            "time": "2021-04-13T18:16:44+00:00"
+        },
+        {
+            "name": "facebook/graph-sdk",
+            "version": "5.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/facebook/php-graph-sdk.git",
+                "reference": "2d8250638b33d73e7a87add65f47fabf91f8ad9b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/facebook/php-graph-sdk/zipball/2d8250638b33d73e7a87add65f47fabf91f8ad9b",
+                "reference": "2d8250638b33d73e7a87add65f47fabf91f8ad9b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4|^7.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "~5.0",
+                "mockery/mockery": "~0.8",
+                "phpunit/phpunit": "~4.0"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "Allows for implementation of the Guzzle HTTP client",
+                "paragonie/random_compat": "Provides a better CSPRNG option in PHP 5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Facebook\\": "src/Facebook/"
+                },
+                "files": [
+                    "src/Facebook/polyfills.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Facebook Platform"
+            ],
+            "authors": [
+                {
+                    "name": "Facebook",
+                    "homepage": "https://github.com/facebook/php-graph-sdk/contributors"
+                }
+            ],
+            "description": "Facebook SDK for PHP",
+            "homepage": "https://github.com/facebook/php-graph-sdk",
+            "keywords": [
+                "facebook",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/facebook/php-graph-sdk/issues",
+                "source": "https://github.com/facebook/php-graph-sdk/tree/5.7.0"
+            },
+            "time": "2018-12-11T22:56:31+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -328,6 +390,130 @@
                 "source": "https://github.com/guzzle/psr7/tree/1.8.1"
             },
             "time": "2021-03-21T16:25:00+00:00"
+        },
+        {
+            "name": "hybridauth/hybridauth",
+            "version": "v2.9.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hybridauth/hybridauth.git",
+                "reference": "8e17bdb8d28efedb008504550db230c985723d8a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hybridauth/hybridauth/zipball/8e17bdb8d28efedb008504550db230c985723d8a",
+                "reference": "8e17bdb8d28efedb008504550db230c985723d8a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "facebook/graph-sdk": "^5.4",
+                "php": ">=5.2.0"
+            },
+            "require-dev": {
+                "squizlabs/php_codesniffer": "2.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Hybrid": "hybridauth/"
+                },
+                "classmap": [
+                    "hybridauth/Hybrid"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "(MIT or GPL-3.0+)"
+            ],
+            "authors": [
+                {
+                    "name": "Miled",
+                    "email": "hybridauth@gmail.com"
+                }
+            ],
+            "description": "Open source social sign on PHP library.",
+            "homepage": "http://hybridauth.sourceforge.net",
+            "keywords": [
+                "OpenId",
+                "facebook",
+                "google",
+                "hybridauth",
+                "login",
+                "oauth",
+                "social",
+                "twitter",
+                "yahoo"
+            ],
+            "support": {
+                "email": "hybridauth@gmail.com",
+                "forum": "https://groups.google.com/d/forum/hybridauth",
+                "gitter": "https://gitter.im/hybridauth/hybridauth",
+                "issues": "https://github.com/hybridauth/hybridauth/issues",
+                "source": "https://github.com/hybridauth/hybridauth/tree/v2"
+            },
+            "time": "2017-07-09T07:14:21+00:00"
+        },
+        {
+            "name": "imagine/imagine",
+            "version": "v0.6.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/avalanche123/Imagine.git",
+                "reference": "149041d2a1b517107bfe270ca2b1a17aa341715d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/avalanche123/Imagine/zipball/149041d2a1b517107bfe270ca2b1a17aa341715d",
+                "reference": "149041d2a1b517107bfe270ca2b1a17aa341715d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "sami/sami": "dev-master"
+            },
+            "suggest": {
+                "ext-gd": "to use the GD implementation",
+                "ext-gmagick": "to use the Gmagick implementation",
+                "ext-imagick": "to use the Imagick implementation"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Imagine": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bulat Shakirzyanov",
+                    "email": "mallluhuct@gmail.com",
+                    "homepage": "http://avalanche123.com"
+                }
+            ],
+            "description": "Image processing for PHP 5.3",
+            "homepage": "http://imagine.readthedocs.org/",
+            "keywords": [
+                "drawing",
+                "graphics",
+                "image manipulation",
+                "image processing"
+            ],
+            "support": {
+                "issues": "https://github.com/avalanche123/Imagine/issues",
+                "source": "https://github.com/avalanche123/Imagine/tree/v0.6.3"
+            },
+            "time": "2015-09-19T16:54:05+00:00"
         },
         {
             "name": "league/flysystem",
@@ -750,6 +936,79 @@
                 "source": "https://github.com/o-log/php-lib/tree/master"
             },
             "time": "2017-05-24T16:51:29+00:00"
+        },
+        {
+            "name": "phpmailer/phpmailer",
+            "version": "v6.1.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPMailer/PHPMailer.git",
+                "reference": "917ab212fa00dc6eacbb26e8bc387ebe40993bc1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/917ab212fa00dc6eacbb26e8bc387ebe40993bc1",
+                "reference": "917ab212fa00dc6eacbb26e8bc387ebe40993bc1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "ext-filter": "*",
+                "ext-hash": "*",
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "doctrine/annotations": "^1.2",
+                "friendsofphp/php-cs-fixer": "^2.2",
+                "phpunit/phpunit": "^4.8 || ^5.7"
+            },
+            "suggest": {
+                "ext-mbstring": "Needed to send email in multibyte encoding charset",
+                "hayageek/oauth2-yahoo": "Needed for Yahoo XOAUTH2 authentication",
+                "league/oauth2-google": "Needed for Google XOAUTH2 authentication",
+                "psr/log": "For optional PSR-3 debug logging",
+                "stevenmaguire/oauth2-microsoft": "Needed for Microsoft XOAUTH2 authentication",
+                "symfony/polyfill-mbstring": "To support UTF-8 if the Mbstring PHP extension is not enabled (^1.2)"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PHPMailer\\PHPMailer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1-only"
+            ],
+            "authors": [
+                {
+                    "name": "Marcus Bointon",
+                    "email": "phpmailer@synchromedia.co.uk"
+                },
+                {
+                    "name": "Jim Jagielski",
+                    "email": "jimjag@gmail.com"
+                },
+                {
+                    "name": "Andy Prevost",
+                    "email": "codeworxtech@users.sourceforge.net"
+                },
+                {
+                    "name": "Brent R. Matzelle"
+                }
+            ],
+            "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
+            "support": {
+                "issues": "https://github.com/PHPMailer/PHPMailer/issues",
+                "source": "https://github.com/PHPMailer/PHPMailer/tree/v6.1.8"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/synchro",
+                    "type": "github"
+                }
+            ],
+            "time": "2020-10-09T14:55:58+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -1437,6 +1696,50 @@
             "time": "2020-07-14T06:09:04+00:00"
         },
         {
+            "name": "websk/php-auth",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/websk/php-auth.git",
+                "reference": "87d409db4e887d5eaf053032fd452161e6feb6ee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/websk/php-auth/zipball/87d409db4e887d5eaf053032fd452161e6feb6ee",
+                "reference": "87d409db4e887d5eaf053032fd452161e6feb6ee",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pdo": "*",
+                "hybridauth/hybridauth": "2.9.*",
+                "php": "^7.4",
+                "phpmailer/phpmailer": "6.1.*",
+                "slim/slim": "^3.0",
+                "websk/php-cache": "1.1.*",
+                "websk/php-captcha": "1.0.*",
+                "websk/php-config": "1.0.*",
+                "websk/php-crud": "1.3.*",
+                "websk/php-db": "1.3.*",
+                "websk/php-entity": "1.1.*",
+                "websk/php-imagemanager": "1.0.*",
+                "websk/php-slim": "1.0.*",
+                "websk/php-utils": "1.0.*",
+                "websk/php-view": "1.0.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "support": {
+                "issues": "https://github.com/websk/php-auth/issues",
+                "source": "https://github.com/websk/php-auth/tree/2.1.0"
+            },
+            "time": "2021-04-14T07:45:15+00:00"
+        },
+        {
             "name": "websk/php-cache",
             "version": "1.1.1",
             "source": {
@@ -1470,6 +1773,39 @@
             "time": "2018-12-12T10:48:47+00:00"
         },
         {
+            "name": "websk/php-captcha",
+            "version": "1.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/websk/php-captcha.git",
+                "reference": "081e9fc4698cfcc74922a75cd63ac09d5f35ed11"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/websk/php-captcha/zipball/081e9fc4698cfcc74922a75cd63ac09d5f35ed11",
+                "reference": "081e9fc4698cfcc74922a75cd63ac09d5f35ed11",
+                "shasum": ""
+            },
+            "require": {
+                "ext-gd": "*",
+                "ext-mbstring": "*",
+                "websk/php-slim": "1.0.*",
+                "websk/php-utils": "1.0.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "support": {
+                "issues": "https://github.com/websk/php-captcha/issues",
+                "source": "https://github.com/websk/php-captcha/tree/master"
+            },
+            "time": "2019-10-25T14:22:09+00:00"
+        },
+        {
             "name": "websk/php-config",
             "version": "1.0.2",
             "source": {
@@ -1500,16 +1836,16 @@
         },
         {
             "name": "websk/php-crud",
-            "version": "1.2.2",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/websk/php-crud.git",
-                "reference": "325a2c5ff7c57bfc0bdb0db39481d469769940e3"
+                "reference": "1c7cd8bf94b4987057b908f5ade16bf636bc149d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/websk/php-crud/zipball/325a2c5ff7c57bfc0bdb0db39481d469769940e3",
-                "reference": "325a2c5ff7c57bfc0bdb0db39481d469769940e3",
+                "url": "https://api.github.com/repos/websk/php-crud/zipball/1c7cd8bf94b4987057b908f5ade16bf636bc149d",
+                "reference": "1c7cd8bf94b4987057b908f5ade16bf636bc149d",
                 "shasum": ""
             },
             "require": {
@@ -1520,8 +1856,8 @@
                 "slim/slim": "^3.0",
                 "websk/php-cache": "1.1.*",
                 "websk/php-config": "1.0.*",
-                "websk/php-db": "1.2.*",
-                "websk/php-entity": "1.0.*",
+                "websk/php-db": "1.3.*",
+                "websk/php-entity": "1.1.*",
                 "websk/php-filemanager": "1.0.*",
                 "websk/php-utils": "1.0.*",
                 "websk/php-view": "1.0.*"
@@ -1533,24 +1869,25 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
+            "description": "CRUD",
             "support": {
                 "issues": "https://github.com/websk/php-crud/issues",
-                "source": "https://github.com/websk/php-crud/tree/1.2.2"
+                "source": "https://github.com/websk/php-crud/tree/1.3.0"
             },
-            "time": "2021-02-07T09:03:23+00:00"
+            "time": "2021-04-14T07:43:38+00:00"
         },
         {
             "name": "websk/php-db",
-            "version": "1.2.7",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/websk/php-db.git",
-                "reference": "772ac252399922ac8fa5e79ca5e3a15887461f00"
+                "reference": "58b377cdbda278c4abff6ba6c0f62eb58da2f50d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/websk/php-db/zipball/772ac252399922ac8fa5e79ca5e3a15887461f00",
-                "reference": "772ac252399922ac8fa5e79ca5e3a15887461f00",
+                "url": "https://api.github.com/repos/websk/php-db/zipball/58b377cdbda278c4abff6ba6c0f62eb58da2f50d",
+                "reference": "58b377cdbda278c4abff6ba6c0f62eb58da2f50d",
                 "shasum": ""
             },
             "require": {
@@ -1573,29 +1910,29 @@
             "description": "DB Service",
             "support": {
                 "issues": "https://github.com/websk/php-db/issues",
-                "source": "https://github.com/websk/php-db/tree/1.2.7"
+                "source": "https://github.com/websk/php-db/tree/1.3.0"
             },
-            "time": "2021-04-12T08:18:30+00:00"
+            "time": "2021-04-14T06:29:26+00:00"
         },
         {
             "name": "websk/php-entity",
-            "version": "1.0.5",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/websk/php-entity.git",
-                "reference": "e38fa959293439f3718f3ffb49f6ab441f100d06"
+                "reference": "befb022ddf1cca66c630e17fe6f51e2c961fcd62"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/websk/php-entity/zipball/e38fa959293439f3718f3ffb49f6ab441f100d06",
-                "reference": "e38fa959293439f3718f3ffb49f6ab441f100d06",
+                "url": "https://api.github.com/repos/websk/php-entity/zipball/befb022ddf1cca66c630e17fe6f51e2c961fcd62",
+                "reference": "befb022ddf1cca66c630e17fe6f51e2c961fcd62",
                 "shasum": ""
             },
             "require": {
                 "ext-pdo": "*",
                 "php": "^7.4",
                 "websk/php-cache": "1.1.*",
-                "websk/php-db": "1.2.*",
+                "websk/php-db": "1.3.*",
                 "websk/php-utils": "1.0.*"
             },
             "type": "library",
@@ -1605,11 +1942,12 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
+            "description": "PHP Entity",
             "support": {
                 "issues": "https://github.com/websk/php-entity/issues",
-                "source": "https://github.com/websk/php-entity/tree/1.0.5"
+                "source": "https://github.com/websk/php-entity/tree/1.1.0"
             },
-            "time": "2021-02-04T15:58:23+00:00"
+            "time": "2021-04-14T07:40:22+00:00"
         },
         {
             "name": "websk/php-filemanager",
@@ -1646,6 +1984,73 @@
             "time": "2020-02-21T07:51:01+00:00"
         },
         {
+            "name": "websk/php-imagemanager",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/websk/php-imagemanager.git",
+                "reference": "a65a922af7c69b350d383e243ad817c1840934f7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/websk/php-imagemanager/zipball/a65a922af7c69b350d383e243ad817c1840934f7",
+                "reference": "a65a922af7c69b350d383e243ad817c1840934f7",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "imagine/imagine": "0.6.3",
+                "websk/php-config": "1.0.*",
+                "websk/php-simple-router": "1.0.*",
+                "websk/php-utils": "1.0.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "support": {
+                "issues": "https://github.com/websk/php-imagemanager/issues",
+                "source": "https://github.com/websk/php-imagemanager/tree/master"
+            },
+            "time": "2019-02-19T10:32:19+00:00"
+        },
+        {
+            "name": "websk/php-simple-router",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/websk/php-simple-router.git",
+                "reference": "1685670d6e2a303511963a6eab5977e4caf27517"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/websk/php-simple-router/zipball/1685670d6e2a303511963a6eab5977e4caf27517",
+                "reference": "1685670d6e2a303511963a6eab5977e4caf27517",
+                "shasum": ""
+            },
+            "require": {
+                "ext-xmlwriter": "*",
+                "websk/php-config": "1.0.*",
+                "websk/php-utils": "1.0.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "support": {
+                "issues": "https://github.com/websk/php-simple-router/issues",
+                "source": "https://github.com/websk/php-simple-router/tree/master"
+            },
+            "time": "2018-12-03T15:32:05+00:00"
+        },
+        {
             "name": "websk/php-slim",
             "version": "1.0.2",
             "source": {
@@ -1680,20 +2085,21 @@
         },
         {
             "name": "websk/php-utils",
-            "version": "1.0.7",
+            "version": "1.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/websk/php-utils.git",
-                "reference": "f63b782355d34ca39f5f15d72d91515581e93e0c"
+                "reference": "0e1df28fc1a62d2e20d7affe94b9a78cdce8b66a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/websk/php-utils/zipball/f63b782355d34ca39f5f15d72d91515581e93e0c",
-                "reference": "f63b782355d34ca39f5f15d72d91515581e93e0c",
+                "url": "https://api.github.com/repos/websk/php-utils/zipball/0e1df28fc1a62d2e20d7affe94b9a78cdce8b66a",
+                "reference": "0e1df28fc1a62d2e20d7affe94b9a78cdce8b66a",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
+                "ext-mbstring": "*",
                 "php": "^7.4",
                 "websk/php-config": "1.0.*"
             },
@@ -1704,11 +2110,12 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
+            "description": "PHP utils",
             "support": {
                 "issues": "https://github.com/websk/php-utils/issues",
-                "source": "https://github.com/websk/php-utils/tree/1.0.7"
+                "source": "https://github.com/websk/php-utils/tree/1.0.8"
             },
-            "time": "2021-02-04T13:46:06+00:00"
+            "time": "2021-04-14T07:03:48+00:00"
         },
         {
             "name": "websk/php-view",

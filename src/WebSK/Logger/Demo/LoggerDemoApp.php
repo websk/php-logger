@@ -6,12 +6,16 @@ use Slim\App;
 use Slim\Handlers\Strategies\RequestResponseArgs;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use WebSK\Auth\AuthServiceProvider;
+use WebSK\Auth\User\UserRoutes;
+use WebSK\Auth\User\UserServiceProvider;
 use WebSK\Cache\CacheServiceProvider;
 use WebSK\CRUD\CRUDServiceProvider;
 use WebSK\DB\DBWrapper;
 use WebSK\Logger\LoggerConfig;
 use WebSK\Logger\LoggerRoutes;
 use WebSK\Logger\LoggerServiceProvider;
+use WebSK\Logger\RequestHandlers\EntriesListHandler;
 use WebSK\Slim\Facade;
 use WebSK\Slim\Router;
 
@@ -34,6 +38,8 @@ class LoggerDemoApp extends App
         CacheServiceProvider::register($container);
         LoggerServiceProvider::register($container);
         CRUDServiceProvider::register($container);
+        AuthServiceProvider::register($container);
+        UserServiceProvider::register($container);
 
         $this->registerRoutes();
     }
@@ -47,15 +53,18 @@ class LoggerDemoApp extends App
 
         // Demo routing. Redirects
         $this->get('/', function (Request $request, Response $response) {
-            return $response->withRedirect(Router::pathFor(LoggerRoutes::ROUTE_NAME_ADMIN_LOGGER_ENTRIES_LIST));
+            return $response->withRedirect(Router::pathFor(EntriesListHandler::class));
         });
         $this->get(LoggerConfig::getAdminMainPageUrl(), function (Request $request, Response $response) {
-            return $response->withRedirect(Router::pathFor(LoggerRoutes::ROUTE_NAME_ADMIN_LOGGER_ENTRIES_LIST));
+            return $response->withRedirect(Router::pathFor(EntriesListHandler::class));
         });
 
         $this->group('/admin', function (App $app) {
             LoggerRoutes::registerAdmin($app);
+            UserRoutes::registerAdmin($app);
         });
+
+        UserRoutes::register($this);
 
         /** Use facade */
         Facade::setFacadeApplication($this);

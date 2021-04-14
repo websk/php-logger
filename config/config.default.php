@@ -21,6 +21,12 @@ return [
                 'password' => 'root',
                 'dump_file_path' => \WebSK\Logger\LoggerServiceProvider::DUMP_FILE_PATH
             ],
+            'db_auth' => [
+                'host' => 'localhost',
+                'db_name' => 'db_auth',
+                'user' => 'root',
+                'password' => 'root'
+            ],
         ],
         'log_path' => '/var/www/log',
         'tmp_path' => '/var/www/tmp',

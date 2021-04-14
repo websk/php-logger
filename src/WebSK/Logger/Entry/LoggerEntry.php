@@ -5,28 +5,36 @@ namespace WebSK\Logger\Entry;
 use WebSK\Entity\Entity;
 use WebSK\Entity\ProtectPropertiesTrait;
 
+/**
+ * Class LoggerEntry
+ * @package WebSK\Logger\Entry
+ */
 class LoggerEntry extends Entity
 {
     use ProtectPropertiesTrait;
 
-    const ENTITY_SERVICE_CONTAINER_ID = 'logger.entry_service';
-    const ENTITY_REPOSITORY_CONTAINER_ID = 'logger.entry_repository';
     const DB_TABLE_NAME = 'logger_entry';
 
-    const _USER_FULLID = 'user_full_id';
-    const _OBJECT_FULLID = 'object_full_id';
-    const _SERIALIZED_OBJECT = 'serialized_object';
+    const _USER_FULL_ID = 'user_full_id';
+    protected ?string $user_full_id = null;
 
-    /** @var string */
-    protected $user_full_id;
-    /** @var string */
-    protected $object_full_id;
-    /** @var string */
-    protected $serialized_object;
-    /** @var string */
-    protected $user_ip;
-    /** @var string */
-    protected $comment;
+    const _OBJECT_FULL_ID = 'object_full_id';
+    protected string $object_full_id;
+
+    const _SERIALIZED_OBJECT = 'serialized_object';
+    protected string $serialized_object;
+
+    const _USER_IP = 'user_ip';
+    protected string $user_ip;
+
+    const _COMMENT = 'comment';
+    protected string $comment;
+
+    const _REQUEST_URI_WITH_SERVER_NAME = 'request_uri_with_server_name';
+    protected string $request_uri_with_server_name = '';
+
+    const _HTTP_USER_AGENT = 'http_user_agent';
+    protected string $http_user_agent = '';
 
     /**
      * @return string
@@ -93,7 +101,7 @@ class LoggerEntry extends Entity
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getUserFullId(): ?string
     {
@@ -106,5 +114,37 @@ class LoggerEntry extends Entity
     public function setUserFullId(?string $value)
     {
         $this->user_full_id = $value;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRequestUriWithServerName(): string
+    {
+        return $this->request_uri_with_server_name;
+    }
+
+    /**
+     * @param string $request_uri_with_server_name
+     */
+    public function setRequestUriWithServerName(string $request_uri_with_server_name): void
+    {
+        $this->request_uri_with_server_name = $request_uri_with_server_name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHttpUserAgent(): string
+    {
+        return $this->http_user_agent;
+    }
+
+    /**
+     * @param string $http_user_agent
+     */
+    public function setHttpUserAgent(string $http_user_agent): void
+    {
+        $this->http_user_agent = $http_user_agent;
     }
 }

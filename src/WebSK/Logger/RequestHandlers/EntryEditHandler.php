@@ -5,12 +5,16 @@ namespace WebSK\Logger\RequestHandlers;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use WebSK\Auth\User\UserRoutes;
+use WebSK\Auth\User\UserServiceProvider;
+use WebSK\Logger\CompareHTML;
+use WebSK\Logger\Entry\LoggerEntry;
 use WebSK\Logger\LoggerConfig;
+use WebSK\Utils\Sanitize;
 use WebSK\Views\LayoutDTO;
 use WebSK\Slim\RequestHandlers\BaseHandler;
 use WebSK\Utils\HTTP;
 use WebSK\Views\BreadcrumbItemDTO;
-use WebSK\Logger\LoggerRoutes;
 use WebSK\Logger\LoggerServiceProvider;
 use WebSK\Views\PhpRender;
 
@@ -35,22 +39,26 @@ class EntryEditHandler extends BaseHandler
 
         $html = '';
         $html .= $this->renderRecordHead($entry_id);
-        $html .= $this->delta($entry_id);
-        $html .= $this->renderObjectFields($entry_id);
+
+        try {
+            $html .= $this->delta($entry_id);
+            $html .= $this->renderObjectFields($entry_id);
+        } catch (\Throwable $e) {
+            $html .= '<div class="alert alert-danger">Структура объекта была изменена. Показ содержимого объекта невозможен.</div>';
+        }
 
         $layout_dto = new LayoutDTO();
         $layout_dto->setTitle(date('Y.d.m H:i', $entry_obj->getCreatedAtTs()));
         $layout_dto->setContentHtml($html);
         $breadcrumbs_arr = [
-            new BreadcrumbItemDTO('Главная', LoggerConfig::getAdminMainPageUrl()),
             new BreadcrumbItemDTO(
                 'Журналы',
-                $this->pathFor(LoggerRoutes::ROUTE_NAME_ADMIN_LOGGER_ENTRIES_LIST)
+                $this->pathFor(EntriesListHandler::class)
             ),
             new BreadcrumbItemDTO(
                 $entry_obj->getObjectFullId(),
                 $this->pathFor(
-                    LoggerRoutes::ROUTE_NAME_ADMIN_LOGGER_OBJECT_ENTRIES_LIST,
+                    ObjectEntriesListHandler::class,
                     ['object_full_id' => urlencode($entry_obj->getObjectFullId())]
                 )
             ),
@@ -64,7 +72,7 @@ class EntryEditHandler extends BaseHandler
      * @param $current_record_id
      * @return string
      */
-    public function delta($current_record_id)
+    public function delta($current_record_id): string
     {
         $html = '';
 
@@ -82,7 +90,7 @@ class EntryEditHandler extends BaseHandler
         $prev_record_obj = LoggerServiceProvider::getEntryService($this->container)->getById($prev_record_id);
 
 
-        $edit_url = $this->pathFor(LoggerRoutes::ROUTE_NAME_ADMIN_LOGGER_ENTRY_EDIT, ['entry_id' => $prev_record_id]);
+        $edit_url = $this->pathFor(EntryEditHandler::class, ['entry_id' => $prev_record_id]);
 
         // определение дельты
 
@@ -96,51 +104,50 @@ class EntryEditHandler extends BaseHandler
         $prev_record_as_list = $this->convertValueToList($prev_obj);
         ksort($prev_record_as_list); // сортируем для красоты
 
-        $html .= '<table class="table">';
-        $html .= '<thead>';
-        $html .= '<tr>';
-        $html .= '<th>Поле</th>';
-        $html .= '<th>Старое значение</th>';
-        $html .= '<th>Новое значение</th>';
-        $html .= '</tr>';
-        $html .= '</thead>';
-
         $added_rows = array_diff_key($current_record_as_list, $prev_record_as_list);
-
-        foreach ($added_rows as $k => $v) {
-            $html .= '<tr>';
-            $html .= '<td><b>' . $k . '</b></td>';
-            $html .= '<td style="background-color: #eee;"></td>';
-            $html .= '<td>' . $this->renderDeltaValue($v) . '</td>';
-            $html .= '</tr>';
-        }
-
         $deleted_rows = array_diff_key($prev_record_as_list, $current_record_as_list);
 
-        foreach ($deleted_rows as $k => $v) {
+        if ($added_rows || $deleted_rows) {
+            $html .= '<table class="table">';
+            $html .= '<thead>';
             $html .= '<tr>';
-            $html .= '<td><b>' . $k . '</b></td>';
-            $html .= '<td>' . $this->renderDeltaValue($v) . '</td>';
-            $html .= '<td style="background-color: #eee;"></td>';
+            $html .= '<th>Поле</th>';
+            $html .= '<th>Старое значение</th>';
+            $html .= '<th>Новое значение</th>';
             $html .= '</tr>';
+            $html .= '</thead>';
+
+            foreach ($added_rows as $k => $v) {
+                $html .= '<tr>';
+                $html .= '<td><b>' . $k . '</b></td>';
+                $html .= '<td style="background-color: #eee;"></td>';
+                $html .= '<td>' . Sanitize::sanitizeTagContent($this->renderDeltaValue($v)) . '</td>';
+                $html .= '</tr>';
+            }
+
+            foreach ($deleted_rows as $k => $v) {
+                $html .= '<tr>';
+                $html .= '<td><b>' . $k . '</b></td>';
+                $html .= '<td>' . Sanitize::sanitizeTagContent($this->renderDeltaValue($v)) . '</td>';
+                $html .= '<td style="background-color: #eee;"></td>';
+                $html .= '</tr>';
+            }
+
+            $html .= '</table>';
         }
 
         foreach ($current_record_as_list as $k => $current_v) {
-            if (array_key_exists($k, $prev_record_as_list)) {
-                $prev_v = $prev_record_as_list[$k];
-                if ($current_v != $prev_v) {
-                    $html .= '<tr>';
-                    $html .= '<td><b>' . $k . '</b></td>';
-                    $html .= '<td>' . $this->renderDeltaValue($prev_v) . '</td>';
-                    $html .= '<td>' . $this->renderDeltaValue($current_v) . '</td>';
-                    $html .= '</tr>';
-                }
+            if (!array_key_exists($k, $prev_record_as_list)) {
+                continue;
             }
+
+            $prev_v = $prev_record_as_list[$k];
+            if ($current_v == $prev_v) {
+                continue;
+            }
+
+            $html .= CompareHTML::drawCompare($prev_v, $current_v, $k);
         }
-
-        $html .= '</table>';
-
-        $html .= '<div>Для длинных значений полный текст здесь не приведен, его можно увидеть в полях объекта ниже.</div>';
 
         return $html;
     }
@@ -149,7 +156,7 @@ class EntryEditHandler extends BaseHandler
      * @param $v
      * @return string
      */
-    protected function renderDeltaValue($v)
+    protected function renderDeltaValue($v): string
     {
         $limit = 300;
 
@@ -161,28 +168,59 @@ class EntryEditHandler extends BaseHandler
     }
 
     /**
+     * @param LoggerEntry $logger_entry
+     * @return string
+     */
+    protected function getUserNameWithLinkForEntry(LoggerEntry $logger_entry): string
+    {
+        $user_id = LoggerServiceProvider::getEntryService($this->container)->getUserIdForEntry($logger_entry);
+
+        if (!$user_id) {
+            if (is_null($logger_entry->getUserFullId())) {
+                return '';
+            }
+
+            return $logger_entry->getUserFullId();
+        }
+
+        $user_obj = UserServiceProvider::getUserService($this->container)->getById($user_id, false);
+        if (is_null($user_obj)) {
+            return $logger_entry->getUserFullId();
+        }
+
+        $user_edit_url = $this->pathFor(UserRoutes::ROUTE_NAME_ADMIN_USER_EDIT, ['user_id' => $user_obj->getId()]);
+
+        return '<a href="' . $user_edit_url .'">' . $user_obj->getName() . '</a>';
+    }
+
+    /**
      * @param $record_id
      * @return string
      */
-    protected function renderRecordHead($record_id)
+    protected function renderRecordHead($record_id): string
     {
         $entry_obj = LoggerServiceProvider::getEntryService($this->container)->getById($record_id);
 
-        $user_str = $entry_obj->getUserFullid();
+        $user_str = $this->getUserNameWithLinkForEntry($entry_obj);
 
-        return '<dl class="dl-horizontal jumbotron" style="margin-top:20px;padding: 10px;">
-	<dt style="padding: 5px 0;">Имя пользователя</dt>
-	<dd style="padding: 5px 0;">' . $user_str . '</dd>
-    <dt style="padding: 5px 0;">Время изменения</dt>
-    <dd style="padding: 5px 0;">' . date('d.m H:i', $entry_obj->getCreatedAtTs()) . '</dd>
-    <dt style="padding: 5px 0;">IP адрес</dt>
-    <dd style="padding: 5px 0;">' . $entry_obj->getUserIp() . '</dd>
-    <dt style="padding: 5px 0;">Комментарий</dt>
-    <dd style="padding: 5px 0;">' . $entry_obj->getComment() . '</dd>
-    <dt style="padding: 5px 0;">Идентификатор</dt>
-    <dd style="padding: 5px 0;">' . $entry_obj->getObjectFullid() . '</dd>
-</dl>
-   ';
+        $html = '<dl class="dl-horizontal jumbotron" style="margin-top:20px;padding: 10px;">';
+        $html .= '<dt style="padding: 5px 0;">Имя пользователя</dt>';
+        $html .= '<dd style="padding: 5px 0;">' . $user_str . '</dd>';
+        $html .= '<dt style="padding: 5px 0;">Время изменения</dt>';
+        $html .= '<dd style="padding: 5px 0;">' . date('d.m H:i', $entry_obj->getCreatedAtTs()) . '</dd>';
+        $html .= '<dt style="padding: 5px 0;">IP адрес</dt>';
+        $html .= '<dd style="padding: 5px 0;">' . $entry_obj->getUserIp() . '</dd>';
+        $html .= '<dt style="padding: 5px 0;">URL</dt>';
+        $html .= '<dd style="padding: 5px 0;">' . $entry_obj->getRequestUriWithServerName() . '</dd>';
+        $html .= '<dt style="padding: 5px 0;">User agent</dt>';
+        $html .= '<dd style="padding: 5px 0;">' . $entry_obj->getHttpUserAgent() . '</dd>';
+        $html .= '<dt style="padding: 5px 0;">Комментарий</dt>';
+        $html .= '<dd style="padding: 5px 0;">' . $entry_obj->getComment() . '</dd>';
+        $html .= '<dt style="padding: 5px 0;">Идентификатор</dt>';
+        $html .= '<dd style="padding: 5px 0;">' . $entry_obj->getObjectFullid() . '</dd>';
+        $html .= '</dl>';
+
+        return $html;
     }
 
     /**
@@ -190,7 +228,7 @@ class EntryEditHandler extends BaseHandler
      * @return string
      * @throws \ReflectionException
      */
-    protected function renderObjectFields($record_id)
+    protected function renderObjectFields($record_id): string
     {
         $html = '<h2>Все поля объекта</h2>';
 
@@ -199,7 +237,7 @@ class EntryEditHandler extends BaseHandler
         $record_objs = unserialize($record_obj->getSerializedObject());
 
         $value_as_list = $this->convertValueToList($record_objs);
-        ksort($value_as_list); // сортируем для красоты
+        ksort($value_as_list);
 
         $last_path = '';
 
@@ -215,13 +253,13 @@ class EntryEditHandler extends BaseHandler
             }
 
             if (strlen($value) > 100) {
-                $html .= '<div style="padding: 5px 0px; border-bottom: 1px solid #ddd;">';
+                $html .= '<div style="padding: 5px 0; border-bottom: 1px solid #ddd;">';
 
                 $html .= '<div><b>' . $path_to_display . '</b></div>';
-                $html .= '<div><pre style="white-space: pre-wrap;">' . $value . '</pre></div>';
+                $html .= '<div><pre style="white-space: pre-wrap;">' . Sanitize::sanitizeTagContent($value) . '</pre></div>';
                 $html .= '</div>';
             } else {
-                $html .= '<div style="padding: 5px 0px; border-bottom: 1px solid #ddd;">';
+                $html .= '<div style="padding: 5px 0; border-bottom: 1px solid #ddd;">';
 
                 $html .= '<span style="padding-right: 50px;"><b>' . $path_to_display . '</b></span>';
                 $html .= $value;
@@ -248,7 +286,7 @@ class EntryEditHandler extends BaseHandler
         }
 
         if (is_scalar($value_value)) {
-            return array($value_path => htmlentities($value_value));
+            return array($value_path => $value_value);
         }
 
         $value_as_array = null;
@@ -270,7 +308,7 @@ class EntryEditHandler extends BaseHandler
 
             foreach ($properties as $prop_obj) {
                 // не показываем статические свойства класса - они не относятся к конкретному объекту
-                // (например, это могут быть настройки круда для класса) и в журнале не нужны
+                // (например, это могут быть настройки CRUD для класса) и в журнале не нужны
                 if ($prop_obj->isStatic()) {
                     continue;
                 }
@@ -303,7 +341,7 @@ class EntryEditHandler extends BaseHandler
      * @param $path
      * @return string
      */
-    protected function getPathWithoutLastElement($path)
+    protected function getPathWithoutLastElement($path): string
     {
         $elems = explode('.', $path);
         array_pop($elems);

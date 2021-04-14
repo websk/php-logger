@@ -5,6 +5,9 @@ namespace WebSK\Logger\RequestHandlers;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use WebSK\CRUD\Table\CRUDTable;
+use WebSK\CRUD\Table\Filters\CRUDTableFilterEqualTimestampIntervalInline;
+use WebSK\CRUD\Table\Filters\CRUDTableFilterLike;
 use WebSK\Logger\LoggerConfig;
 use WebSK\Views\LayoutDTO;
 use WebSK\Slim\RequestHandlers\BaseHandler;
@@ -16,11 +19,20 @@ use WebSK\CRUD\Table\Widgets\CRUDTableWidgetText;
 use WebSK\CRUD\Table\Widgets\CRUDTableWidgetTextWithLink;
 use WebSK\CRUD\Table\Widgets\CRUDTableWidgetTimestamp;
 use WebSK\Logger\Entry\LoggerEntry;
-use WebSK\Logger\LoggerRoutes;
 use WebSK\Views\PhpRender;
 
+/**
+ * Class ObjectEntriesListHandler
+ * @package WebSK\Logger\RequestHandlers
+ */
 class ObjectEntriesListHandler extends BaseHandler
 {
+
+    const FILTER_USER_FULL_ID = 'user_full_id';
+    const FILTER_USER_IP = 'user_ip';
+    const FILTER_CREATED_AT_TS_START = 'created_at_ts_start';
+    const FILTER_CREATED_AT_TS_END = 'created_at_ts_end';
+
     /**
      * @param Request $request
      * @param Response $response
@@ -34,8 +46,13 @@ class ObjectEntriesListHandler extends BaseHandler
             null,
             [
                 new CRUDTableColumn(
-                    'Объект',
-                    new CRUDTableWidgetText(LoggerEntry::_OBJECT_FULLID)
+                    'ID',
+                    new CRUDTableWidgetTextWithLink(
+                        LoggerEntry::_ID,
+                        function (LoggerEntry $logger_entry) {
+                            return $this->pathFor(EntryEditHandler::class, ['entry_id' =>$logger_entry->getId()]);
+                        }
+                    )
                 ),
                 new CRUDTableColumn(
                     'Дата создания',
@@ -43,18 +60,38 @@ class ObjectEntriesListHandler extends BaseHandler
                 ),
                 new CRUDTableColumn(
                     'Пользователь',
-                    new CRUDTableWidgetTextWithLink(
-                        LoggerEntry::_USER_FULLID,
-                        function (LoggerEntry $logger_entry) {
-                            return $this->pathFor(LoggerRoutes::ROUTE_NAME_ADMIN_LOGGER_ENTRY_EDIT, ['entry_id' => $logger_entry->getId()]);
-                        }
+                    new CRUDTableWidgetText(
+                        LoggerEntry::_USER_FULL_ID
                     )
-                )
+                ),
+                new CRUDTableColumn(
+                    'IP',
+                    new CRUDTableWidgetText(LoggerEntry::_USER_IP)
+                ),
+                new CRUDTableColumn(
+                    '',
+                    new CRUDTableWidgetText(LoggerEntry::_COMMENT)
+                ),
             ],
             [
-                new CRUDTableFilterEqualInvisible('object_full_id', $object_full_id)
+                new CRUDTableFilterEqualInvisible(LoggerEntry::_OBJECT_FULL_ID, $object_full_id),
+                new CRUDTableFilterLike(
+                    self::FILTER_USER_FULL_ID,
+                    'User Full ID',
+                    LoggerEntry::_USER_FULL_ID,
+                    'Можно указать только часть объекта, например, User.1'
+                ),
+                new CRUDTableFilterLike(self::FILTER_USER_IP, 'User IP', LoggerEntry::_USER_IP),
+                new CRUDTableFilterEqualTimestampIntervalInline(
+                    self::FILTER_CREATED_AT_TS_START,
+                    self::FILTER_CREATED_AT_TS_END,
+                    'Дата создания',
+                    LoggerEntry::_CREATED_AT_TS
+                ),
             ],
-            LoggerEntry::_CREATED_AT_TS . ' DESC'
+            LoggerEntry::_CREATED_AT_TS . ' desc',
+            'logger_object_entries_list',
+            CRUDTable::FILTERS_POSITION_TOP
         );
 
         $crud_table_response = $crud_table_obj->processRequest($request, $response);
@@ -69,7 +106,7 @@ class ObjectEntriesListHandler extends BaseHandler
             new BreadcrumbItemDTO('Главная', LoggerConfig::getAdminMainPageUrl()),
             new BreadcrumbItemDTO(
                 'Журналы',
-                $this->pathFor(LoggerRoutes::ROUTE_NAME_ADMIN_LOGGER_ENTRIES_LIST)
+                $this->pathFor(EntriesListHandler::class)
             ),
         ];
         $layout_dto->setBreadcrumbsDtoArr($breadcrumbs_arr);

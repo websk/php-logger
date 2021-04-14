@@ -2,14 +2,14 @@
 
 namespace WebSK\Logger\Entry;
 
-use OLOG\FullObjectId;
-use OLOG\IP;
 use WebSK\Entity\EntityService;
 use WebSK\Entity\InterfaceEntity;
+use WebSK\Utils\FullObjectId;
+use WebSK\Utils\Network;
 
 /**
- * Class EntryService
- * @package VitrinaTV\Logger\Entry
+ * Class LoggerEntryService
+ * @package WebSK\Logger\Entry
  * @method LoggerEntry getById($entity_id, $exception_if_not_loaded = true)
  */
 class LoggerEntryService extends EntityService
@@ -22,7 +22,7 @@ class LoggerEntryService extends EntityService
      * @return int
      * @throws \Exception
      */
-    public function getPrevRecordEntryId(int $current_entry_id)
+    public function getPrevRecordEntryId(int $current_entry_id): int
     {
         return $this->repository->getPrevRecordEntryId(
             $current_entry_id,
@@ -47,7 +47,7 @@ class LoggerEntryService extends EntityService
         string $comment,
         ?string $user_full_id
     ) {
-        $ip_address = IP::getClientIpRemoteAddr();
+        $ip_address = Network::getClientIpRemoteAddr();
 
         /** @var LoggerEntry[] $saved_entries_arr */
         static $saved_entries_arr = [];
@@ -59,6 +59,8 @@ class LoggerEntryService extends EntityService
             $new_entry_obj->setObjectFullid($object_full_id);
             $new_entry_obj->setSerializedObject(serialize($object));
             $new_entry_obj->setComment($comment);
+            $new_entry_obj->setRequestUriWithServerName(($_SERVER['SERVER_NAME'] ?? '') . ($_SERVER['REQUEST_URI'] ?? ''));
+            $new_entry_obj->setHttpUserAgent($_SERVER['HTTP_USER_AGENT'] ?? '');
 
             $this->save($new_entry_obj);
 
@@ -94,5 +96,20 @@ class LoggerEntryService extends EntityService
     public function removePastLoggerEntries(\DateTime $min_created_datetime, int $limit)
     {
         $this->repository->removePastEntries($min_created_datetime, $limit);
+    }
+
+    /**
+     * @param LoggerEntry $logger_entry
+     * @return int|null
+     */
+    public function getUserIdForEntry(LoggerEntry $logger_entry): ?int
+    {
+        $user_fullid_str = $logger_entry->getUserFullId();
+        $user_full_id_arr = explode('.', $user_fullid_str);
+        if (!array_key_exists(1, $user_full_id_arr)) {
+            return null;
+        }
+
+        return (int)$user_full_id_arr[1];
     }
 }

@@ -4,9 +4,8 @@ namespace WebSK\Logger;
 
 use Psr\Container\ContainerInterface;
 use WebSK\Cache\CacheServiceProvider;
-use WebSK\DB\DBConnectorMySQL;
 use WebSK\DB\DBService;
-use WebSK\DB\DBSettings;
+use WebSK\DB\DBServiceFactory;
 use WebSK\Logger\Entry\LoggerEntry;
 use WebSK\Logger\Entry\LoggerEntryRepository;
 use WebSK\Logger\Entry\LoggerEntryService;
@@ -17,7 +16,7 @@ use WebSK\Logger\Entry\LoggerEntryService;
  */
 class LoggerServiceProvider
 {
-    const DUMP_FILE_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'dumps' . DIRECTORY_SEPARATOR . 'db_logger.sql';
+    const DUMP_FILE_PATH = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'dumps' . DIRECTORY_SEPARATOR . 'db_logger.sql';
     const DB_SERVICE_CONTAINER_ID = 'logger.db_service';
     const DB_ID = 'db_logger';
 
@@ -30,10 +29,10 @@ class LoggerServiceProvider
          * @param ContainerInterface $container
          * @return LoggerEntryService
          */
-        $container[LoggerEntry::ENTITY_SERVICE_CONTAINER_ID] = function (ContainerInterface $container) {
+        $container[LoggerEntryService::class] = function (ContainerInterface $container) {
             return new LoggerEntryService(
                 LoggerEntry::class,
-                $container[LoggerEntry::ENTITY_REPOSITORY_CONTAINER_ID],
+                $container->get(LoggerEntryRepository::class),
                 CacheServiceProvider::getCacheService($container)
             );
         };
@@ -42,7 +41,7 @@ class LoggerServiceProvider
          * @param ContainerInterface $container
          * @return LoggerEntryRepository
          */
-        $container[LoggerEntry::ENTITY_REPOSITORY_CONTAINER_ID] = function (ContainerInterface $container) {
+        $container[LoggerEntryRepository::class] = function (ContainerInterface $container) {
             return new LoggerEntryRepository(
                 LoggerEntry::class,
                 $container->get(self::DB_SERVICE_CONTAINER_ID)
@@ -53,21 +52,10 @@ class LoggerServiceProvider
          * @param ContainerInterface $container
          * @return DBService
          */
-        $container[self::DB_SERVICE_CONTAINER_ID] = function (ContainerInterface $container) {
+        $container[self::DB_SERVICE_CONTAINER_ID] = function (ContainerInterface $container): DBService {
             $db_config = $container['settings']['db'][self::DB_ID];
 
-            $db_connector = new DBConnectorMySQL(
-                $db_config['host'],
-                $db_config['db_name'],
-                $db_config['user'],
-                $db_config['password']
-            );
-
-            $db_settings = new DBSettings(
-                'mysql'
-            );
-
-            return new DBService($db_connector, $db_settings);
+            return DBServiceFactory::factoryMySQL($db_config);
         };
     }
 
@@ -75,17 +63,17 @@ class LoggerServiceProvider
      * @param ContainerInterface $container
      * @return LoggerEntryService
      */
-    public static function getEntryService(ContainerInterface $container)
+    public static function getEntryService(ContainerInterface $container): LoggerEntryService
     {
-        return $container[LoggerEntry::ENTITY_SERVICE_CONTAINER_ID];
+        return $container->get(LoggerEntryService::class);
     }
 
     /**
      * @param ContainerInterface $container
      * @return DBService
      */
-    public static function getDBService(ContainerInterface $container)
+    public static function getDBService(ContainerInterface $container): DBService
     {
-        return $container[self::DB_SERVICE_CONTAINER_ID];
+        return $container->get(self::DB_SERVICE_CONTAINER_ID);
     }
 }
