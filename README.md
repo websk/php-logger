@@ -8,7 +8,7 @@
 * replace settings and paths
 * composer install
 * create MySQL DB db_logger (or other) 
-* load in MySQL DB db_logger src/WebSK/Logger/dumps/db_logger.sql
+* process migration in MySQL DB: `php vendor\bin\websk_db_migration.php migrations:migration_auto`
 * cd public
 * php -S localhost:8000
 * open http://localhost:8000

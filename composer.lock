@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.178.3",
+            "version": "3.178.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "cfeed02f14b0fb3cba8bb75f2ae28cb8c9807369"
+                "reference": "5a268a20272c0c9171570ed57f68b629e966deab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/cfeed02f14b0fb3cba8bb75f2ae28cb8c9807369",
-                "reference": "cfeed02f14b0fb3cba8bb75f2ae28cb8c9807369",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/5a268a20272c0c9171570ed57f68b629e966deab",
+                "reference": "5a268a20272c0c9171570ed57f68b629e966deab",
                 "shasum": ""
             },
             "require": {
@@ -92,9 +92,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.178.3"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.178.5"
             },
-            "time": "2021-04-13T18:16:44+00:00"
+            "time": "2021-04-15T18:12:46+00:00"
         },
         {
             "name": "facebook/graph-sdk",
@@ -1878,16 +1878,16 @@
         },
         {
             "name": "websk/php-db",
-            "version": "1.3.0",
+            "version": "1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/websk/php-db.git",
-                "reference": "58b377cdbda278c4abff6ba6c0f62eb58da2f50d"
+                "reference": "36b301bb2f9c04dee0d19bcfbb903213e81c05c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/websk/php-db/zipball/58b377cdbda278c4abff6ba6c0f62eb58da2f50d",
-                "reference": "58b377cdbda278c4abff6ba6c0f62eb58da2f50d",
+                "url": "https://api.github.com/repos/websk/php-db/zipball/36b301bb2f9c04dee0d19bcfbb903213e81c05c2",
+                "reference": "36b301bb2f9c04dee0d19bcfbb903213e81c05c2",
                 "shasum": ""
             },
             "require": {
@@ -1910,9 +1910,9 @@
             "description": "DB Service",
             "support": {
                 "issues": "https://github.com/websk/php-db/issues",
-                "source": "https://github.com/websk/php-db/tree/1.3.0"
+                "source": "https://github.com/websk/php-db/tree/1.3.1"
             },
-            "time": "2021-04-14T06:29:26+00:00"
+            "time": "2021-04-19T06:30:57+00:00"
         },
         {
             "name": "websk/php-entity",
