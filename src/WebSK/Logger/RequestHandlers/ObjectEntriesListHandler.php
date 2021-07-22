@@ -3,8 +3,7 @@
 namespace WebSK\Logger\RequestHandlers;
 
 use Psr\Http\Message\ResponseInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Psr\Http\Message\ServerRequestInterface;
 use WebSK\CRUD\Table\CRUDTable;
 use WebSK\CRUD\Table\Filters\CRUDTableFilterEqualTimestampIntervalInline;
 use WebSK\CRUD\Table\Filters\CRUDTableFilterLike;
@@ -34,12 +33,12 @@ class ObjectEntriesListHandler extends BaseHandler
     const FILTER_CREATED_AT_TS_END = 'created_at_ts_end';
 
     /**
-     * @param Request $request
-     * @param Response $response
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @param string $object_full_id
      * @return ResponseInterface
      */
-    public function __invoke(Request $request, Response $response, string $object_full_id): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, string $object_full_id): ResponseInterface
     {
         $crud_table_obj = CRUDServiceProvider::getCrud($this->container)->createTable(
             LoggerEntry::class,
@@ -95,7 +94,7 @@ class ObjectEntriesListHandler extends BaseHandler
         );
 
         $crud_table_response = $crud_table_obj->processRequest($request, $response);
-        if ($crud_table_response instanceof Response) {
+        if ($crud_table_response instanceof ResponseInterface) {
             return $crud_table_response;
         }
 

@@ -3,8 +3,7 @@
 namespace WebSK\Logger\RequestHandlers;
 
 use Psr\Http\Message\ResponseInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Psr\Http\Message\ServerRequestInterface;
 use WebSK\Auth\User\UserRoutes;
 use WebSK\Auth\User\UserServiceProvider;
 use WebSK\Logger\CompareHTML;
@@ -25,12 +24,12 @@ use WebSK\Views\PhpRender;
 class EntryEditHandler extends BaseHandler
 {
     /**
-     * @param Request $request
-     * @param Response $response
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @param int $entry_id
      * @return ResponseInterface
      */
-    public function __invoke(Request $request, Response $response, int $entry_id): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, int $entry_id): ResponseInterface
     {
         $entry_obj = LoggerServiceProvider::getEntryService($this->container)->getById($entry_id, false);
         if (!$entry_obj) {

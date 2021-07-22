@@ -2,10 +2,10 @@
 
 namespace WebSK\Logger\Demo;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
 use Slim\Handlers\Strategies\RequestResponseArgs;
-use Slim\Http\Request;
-use Slim\Http\Response;
 use WebSK\Auth\AuthServiceProvider;
 use WebSK\Auth\User\UserRoutes;
 use WebSK\Auth\User\UserServiceProvider;
@@ -52,10 +52,10 @@ class LoggerDemoApp extends App
         };
 
         // Demo routing. Redirects
-        $this->get('/', function (Request $request, Response $response) {
+        $this->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
             return $response->withRedirect(Router::pathFor(EntriesListHandler::class));
         });
-        $this->get(LoggerConfig::getAdminMainPageUrl(), function (Request $request, Response $response) {
+        $this->get(LoggerConfig::getAdminMainPageUrl(), function (ServerRequestInterface $request, ResponseInterface $response) {
             return $response->withRedirect(Router::pathFor(EntriesListHandler::class));
         });
 
