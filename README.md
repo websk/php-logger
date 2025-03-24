@@ -1,5 +1,15 @@
 # WebSK php-logger
 
+## Install
+
+https://packagist.org/packages/websk/php-logger
+
+install dependency using Composer
+
+```shell
+composer require websk/php-logger
+```
+
 ## Config example
 * config/config.default.php
 

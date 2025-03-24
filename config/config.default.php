@@ -20,14 +20,7 @@ return [
                 'user' => 'root',
                 'password' => 'root',
                 'dump_file_path' => \WebSK\Logger\LoggerServiceProvider::DUMP_FILE_PATH
-            ],
-            'db_auth' => [
-                'host' => 'localhost',
-                'db_name' => 'db_auth',
-                'user' => 'root',
-                'password' => 'root',
-                'dump_file_path' => \WebSK\Auth\AuthServiceProvider::DUMP_FILE_PATH
-            ],
+            ]
         ],
         'log_path' => '/var/www/log',
         'tmp_path' => '/var/www/tmp',
@@ -40,7 +33,9 @@ return [
             'layout_main' => '/var/www/php-logger/views/layouts/layout.main.tpl.php',
             'layout_admin' => '/var/www/php-logger/views/layouts/layout.main.tpl.php',
             'main_page_url' => '/',
-            'admin_main_page_url' => '/admin'
+            'admin_main_page_url' => '/admin',
+            'user_service_container_name' => null,
+            'user_profile_route_name' => '',
         ]
     ],
 ];

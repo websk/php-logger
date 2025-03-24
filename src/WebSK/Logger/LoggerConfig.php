@@ -42,4 +42,20 @@ class LoggerConfig
     {
         return ConfWrapper::value('logger.admin_main_page_url', '/admin');
     }
+
+    /**
+     * @return string
+     */
+    public static function getUserProfileRouteName(): string
+    {
+        return ConfWrapper::value('logger.user_profile_route_name', '');
+    }
+
+    /**
+     * @return ?string
+     */
+    public static function getUserServiceContainerName(): ?string
+    {
+        return ConfWrapper::value('logger.user_service_container_name', null);
+    }
 }

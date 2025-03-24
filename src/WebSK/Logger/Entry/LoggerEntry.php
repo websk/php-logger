@@ -13,27 +13,27 @@ class LoggerEntry extends Entity
 {
     use ProtectPropertiesTrait;
 
-    const DB_TABLE_NAME = 'logger_entry';
+    const string DB_TABLE_NAME = 'logger_entry';
 
-    const _USER_FULL_ID = 'user_full_id';
+    const string _USER_FULL_ID = 'user_full_id';
     protected ?string $user_full_id = null;
 
-    const _OBJECT_FULL_ID = 'object_full_id';
+    const string _OBJECT_FULL_ID = 'object_full_id';
     protected string $object_full_id;
 
-    const _SERIALIZED_OBJECT = 'serialized_object';
+    const string _SERIALIZED_OBJECT = 'serialized_object';
     protected string $serialized_object;
 
-    const _USER_IP = 'user_ip';
+    const string _USER_IP = 'user_ip';
     protected string $user_ip;
 
-    const _COMMENT = 'comment';
+    const string _COMMENT = 'comment';
     protected string $comment;
 
-    const _REQUEST_URI_WITH_SERVER_NAME = 'request_uri_with_server_name';
+    const string _REQUEST_URI_WITH_SERVER_NAME = 'request_uri_with_server_name';
     protected string $request_uri_with_server_name = '';
 
-    const _HTTP_USER_AGENT = 'http_user_agent';
+    const string _HTTP_USER_AGENT = 'http_user_agent';
     protected string $http_user_agent = '';
 
     /**
@@ -47,7 +47,7 @@ class LoggerEntry extends Entity
     /**
      * @param string $value
      */
-    public function setComment(string $value)
+    public function setComment(string $value): void
     {
         $this->comment = $value;
     }
@@ -63,7 +63,7 @@ class LoggerEntry extends Entity
     /**
      * @param string $value
      */
-    public function setUserIp(string $value)
+    public function setUserIp(string $value): void
     {
         $this->user_ip = $value;
     }
@@ -79,7 +79,7 @@ class LoggerEntry extends Entity
     /**
      * @param string $value
      */
-    public function setSerializedObject(string $value)
+    public function setSerializedObject(string $value): void
     {
         $this->serialized_object = $value;
     }
@@ -95,7 +95,7 @@ class LoggerEntry extends Entity
     /**
      * @param string $value
      */
-    public function setObjectFullId(string $value)
+    public function setObjectFullId(string $value): void
     {
         $this->object_full_id = $value;
     }
@@ -111,7 +111,7 @@ class LoggerEntry extends Entity
     /**
      * @param null|string $value
      */
-    public function setUserFullId(?string $value)
+    public function setUserFullId(?string $value): void
     {
         $this->user_full_id = $value;
     }

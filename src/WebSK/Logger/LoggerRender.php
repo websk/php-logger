@@ -2,10 +2,9 @@
 
 namespace WebSK\Logger;
 
-use Slim\Interfaces\RouterInterface;
 use WebSK\Logger\RequestHandlers\ObjectEntriesListHandler;
-use WebSK\Slim\Container;
 use WebSK\Entity\InterfaceEntity;
+use WebSK\Slim\Router;
 use WebSK\Utils\FullObjectId;
 
 /**
@@ -20,17 +19,10 @@ class LoggerRender
      */
     public static function getLoggerLinkForEntityObj(InterfaceEntity $entity_obj): string
     {
-        $container = Container::self();
-
-        /** @var RouterInterface $router */
-        $router = $container['router'];
-
         $entity_full_id = FullObjectId::getFullObjectId($entity_obj);
-        $logger_link = $router->pathFor(
+        return Router::urlFor(
             ObjectEntriesListHandler::class,
             ['object_full_id' => urlencode($entity_full_id)]
         );
-
-        return $logger_link;
     }
 }

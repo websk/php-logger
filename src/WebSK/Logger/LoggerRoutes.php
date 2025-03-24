@@ -2,8 +2,8 @@
 
 namespace WebSK\Logger;
 
-use Slim\App;
-use WebSK\Utils\HTTP;
+use Fig\Http\Message\RequestMethodInterface;
+use Slim\Interfaces\RouteCollectorProxyInterface;
 use WebSK\Logger\RequestHandlers\EntriesListHandler;
 use WebSK\Logger\RequestHandlers\EntryEditHandler;
 use WebSK\Logger\RequestHandlers\ObjectEntriesListHandler;
@@ -16,19 +16,19 @@ class LoggerRoutes
 {
 
     /**
-     * @param App $app
+     * @param RouteCollectorProxyInterface $route_collector_proxy
      */
-    public static function registerAdmin(App $app)
+    public static function registerAdmin(RouteCollectorProxyInterface $route_collector_proxy): void
     {
-        $app->group('/logger', function (App $app) {
-            $app->group('/entry', function (App $app) {
-                $app->map([HTTP::METHOD_GET, HTTP::METHOD_POST], '', EntriesListHandler::class)
+        $route_collector_proxy->group('/logger', function (RouteCollectorProxyInterface $route_collector_proxy) {
+            $route_collector_proxy->group('/entry', function (RouteCollectorProxyInterface $route_collector_proxy) {
+                $route_collector_proxy->map([RequestMethodInterface::METHOD_GET, RequestMethodInterface::METHOD_POST], '', EntriesListHandler::class)
                     ->setName(EntriesListHandler::class);
 
-                $app->map([HTTP::METHOD_GET, HTTP::METHOD_POST], '/{entry_id:\d+}', EntryEditHandler::class)
+                $route_collector_proxy->map([RequestMethodInterface::METHOD_GET, RequestMethodInterface::METHOD_POST], '/{entry_id:\d+}', EntryEditHandler::class)
                     ->setName(EntryEditHandler::class);
             });
-            $app->map([HTTP::METHOD_GET, HTTP::METHOD_POST], '/objectentries/{object_full_id:.+}', ObjectEntriesListHandler::class)
+            $route_collector_proxy->map([RequestMethodInterface::METHOD_GET, RequestMethodInterface::METHOD_POST], '/objectentries/{object_full_id:.+}', ObjectEntriesListHandler::class)
                 ->setName(ObjectEntriesListHandler::class);
         });
     }

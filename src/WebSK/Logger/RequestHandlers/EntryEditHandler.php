@@ -2,17 +2,17 @@
 
 namespace WebSK\Logger\RequestHandlers;
 
+use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use WebSK\Auth\User\UserRoutes;
-use WebSK\Auth\User\UserServiceProvider;
+use WebSK\Entity\InterfaceEntity;
+use WebSK\Entity\InterfaceEntityService;
 use WebSK\Logger\CompareHTML;
 use WebSK\Logger\Entry\LoggerEntry;
 use WebSK\Logger\LoggerConfig;
 use WebSK\Utils\Sanitize;
 use WebSK\Views\LayoutDTO;
 use WebSK\Slim\RequestHandlers\BaseHandler;
-use WebSK\Utils\HTTP;
 use WebSK\Views\BreadcrumbItemDTO;
 use WebSK\Logger\LoggerServiceProvider;
 use WebSK\Views\PhpRender;
@@ -23,6 +23,7 @@ use WebSK\Views\PhpRender;
  */
 class EntryEditHandler extends BaseHandler
 {
+
     /**
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
@@ -33,7 +34,7 @@ class EntryEditHandler extends BaseHandler
     {
         $entry_obj = LoggerServiceProvider::getEntryService($this->container)->getById($entry_id, false);
         if (!$entry_obj) {
-            return $response->withStatus(HTTP::STATUS_NOT_FOUND);
+            return $response->withStatus(StatusCodeInterface::STATUS_NOT_FOUND);
         }
 
         $html = '';
@@ -52,11 +53,11 @@ class EntryEditHandler extends BaseHandler
         $breadcrumbs_arr = [
             new BreadcrumbItemDTO(
                 'Журналы',
-                $this->pathFor(EntriesListHandler::class)
+                $this->urlFor(EntriesListHandler::class)
             ),
             new BreadcrumbItemDTO(
                 $entry_obj->getObjectFullId(),
-                $this->pathFor(
+                $this->urlFor(
                     ObjectEntriesListHandler::class,
                     ['object_full_id' => urlencode($entry_obj->getObjectFullId())]
                 )
@@ -68,16 +69,14 @@ class EntryEditHandler extends BaseHandler
     }
 
     /**
-     * @param $current_record_id
+     * @param int $current_record_id
      * @return string
      */
-    public function delta($current_record_id): string
+    public function delta(int $current_record_id): string
     {
         $html = '';
 
         $current_record_obj = LoggerServiceProvider::getEntryService($this->container)->getById($current_record_id);
-
-        // находим предыдущую запись лога для этого объекта
 
         $prev_record_id = LoggerServiceProvider::getEntryService($this->container)
             ->getPrevRecordEntryId($current_record_id);
@@ -89,7 +88,7 @@ class EntryEditHandler extends BaseHandler
         $prev_record_obj = LoggerServiceProvider::getEntryService($this->container)->getById($prev_record_id);
 
 
-        $edit_url = $this->pathFor(EntryEditHandler::class, ['entry_id' => $prev_record_id]);
+        $edit_url = $this->urlFor(EntryEditHandler::class, ['entry_id' => $prev_record_id]);
 
         // определение дельты
 
@@ -182,21 +181,35 @@ class EntryEditHandler extends BaseHandler
             return $logger_entry->getUserFullId();
         }
 
-        $user_obj = UserServiceProvider::getUserService($this->container)->getById($user_id, false);
-        if (is_null($user_obj)) {
+        $user_service_container_name = LoggerConfig::getUserProfileRouteName();
+        if ($user_service_container_name) {
+            $user_service = $this->container->get($user_service_container_name);
+            if ($user_service instanceof InterfaceEntityService) {
+                $user_obj = $user_service->getById($user_id, false);
+            }
+
+            if (is_null($user_obj)) {
+                return $logger_entry->getUserFullId();
+            }
+
+            if (!method_exists($user_obj, 'getName')) {
+                return $logger_entry->getUserFullId();
+            }
+        }
+
+        $user_profile_route_name = LoggerConfig::getUserProfileRouteName();
+        if (!$user_profile_route_name) {
             return $logger_entry->getUserFullId();
         }
 
-        $user_edit_url = $this->pathFor(UserRoutes::ROUTE_NAME_ADMIN_USER_EDIT, ['user_id' => $user_obj->getId()]);
-
-        return '<a href="' . $user_edit_url .'">' . $user_obj->getName() . '</a>';
+        return '<a href="' . $this->urlFor($user_profile_route_name, ['user_id' => $user_obj->getId()]) .'">' . $user_obj->getName() . '</a>';
     }
 
     /**
-     * @param $record_id
+     * @param int $record_id
      * @return string
      */
-    protected function renderRecordHead($record_id): string
+    protected function renderRecordHead(int $record_id): string
     {
         $entry_obj = LoggerServiceProvider::getEntryService($this->container)->getById($record_id);
 
@@ -223,11 +236,11 @@ class EntryEditHandler extends BaseHandler
     }
 
     /**
-     * @param $record_id
+     * @param int $record_id
      * @return string
      * @throws \ReflectionException
      */
-    protected function renderObjectFields($record_id): string
+    protected function renderObjectFields(int $record_id): string
     {
         $html = '<h2>Все поля объекта</h2>';
 
@@ -278,7 +291,7 @@ class EntryEditHandler extends BaseHandler
      * @return array
      * @throws \ReflectionException
      */
-    protected function convertValueToList($value_value, $value_path = '')
+    protected function convertValueToList($value_value, string $value_path = ''): array
     {
         if (is_null($value_value)) {
             return array($value_path => '#NULL#');
@@ -312,7 +325,6 @@ class EntryEditHandler extends BaseHandler
                     continue;
                 }
 
-                $prop_obj->setAccessible(true);
                 $name = $prop_obj->getName();
                 $value = $prop_obj->getValue($value_value);
                 $value_as_array[$name] = $value;
@@ -337,13 +349,14 @@ class EntryEditHandler extends BaseHandler
     }
 
     /**
-     * @param $path
+     * @param string $path
      * @return string
      */
-    protected function getPathWithoutLastElement($path): string
+    protected function getPathWithoutLastElement(string $path): string
     {
         $elems = explode('.', $path);
         array_pop($elems);
+
         return implode('.', $elems);
     }
 }

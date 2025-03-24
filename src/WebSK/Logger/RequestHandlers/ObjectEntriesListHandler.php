@@ -4,6 +4,7 @@ namespace WebSK\Logger\RequestHandlers;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use WebSK\CRUD\CRUD;
 use WebSK\CRUD\Table\CRUDTable;
 use WebSK\CRUD\Table\Filters\CRUDTableFilterEqualTimestampIntervalInline;
 use WebSK\CRUD\Table\Filters\CRUDTableFilterLike;
@@ -11,7 +12,6 @@ use WebSK\Logger\LoggerConfig;
 use WebSK\Views\LayoutDTO;
 use WebSK\Slim\RequestHandlers\BaseHandler;
 use WebSK\Views\BreadcrumbItemDTO;
-use WebSK\CRUD\CRUDServiceProvider;
 use WebSK\CRUD\Table\CRUDTableColumn;
 use WebSK\CRUD\Table\Filters\CRUDTableFilterEqualInvisible;
 use WebSK\CRUD\Table\Widgets\CRUDTableWidgetText;
@@ -27,10 +27,13 @@ use WebSK\Views\PhpRender;
 class ObjectEntriesListHandler extends BaseHandler
 {
 
-    const FILTER_USER_FULL_ID = 'user_full_id';
-    const FILTER_USER_IP = 'user_ip';
-    const FILTER_CREATED_AT_TS_START = 'created_at_ts_start';
-    const FILTER_CREATED_AT_TS_END = 'created_at_ts_end';
+    const string FILTER_USER_FULL_ID = 'user_full_id';
+    const string FILTER_USER_IP = 'user_ip';
+    const string FILTER_CREATED_AT_TS_START = 'created_at_ts_start';
+    const string FILTER_CREATED_AT_TS_END = 'created_at_ts_end';
+
+    /** @Inject */
+    protected CRUD $crud_service;
 
     /**
      * @param ServerRequestInterface $request
@@ -40,7 +43,7 @@ class ObjectEntriesListHandler extends BaseHandler
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, string $object_full_id): ResponseInterface
     {
-        $crud_table_obj = CRUDServiceProvider::getCrud($this->container)->createTable(
+        $crud_table_obj = $this->crud_service->createTable(
             LoggerEntry::class,
             null,
             [
@@ -49,7 +52,7 @@ class ObjectEntriesListHandler extends BaseHandler
                     new CRUDTableWidgetTextWithLink(
                         LoggerEntry::_ID,
                         function (LoggerEntry $logger_entry) {
-                            return $this->pathFor(EntryEditHandler::class, ['entry_id' =>$logger_entry->getId()]);
+                            return $this->urlFor(EntryEditHandler::class, ['entry_id' =>$logger_entry->getId()]);
                         }
                     )
                 ),
@@ -105,7 +108,7 @@ class ObjectEntriesListHandler extends BaseHandler
             new BreadcrumbItemDTO('Главная', LoggerConfig::getAdminMainPageUrl()),
             new BreadcrumbItemDTO(
                 'Журналы',
-                $this->pathFor(EntriesListHandler::class)
+                $this->urlFor(EntriesListHandler::class)
             ),
         ];
         $layout_dto->setBreadcrumbsDtoArr($breadcrumbs_arr);

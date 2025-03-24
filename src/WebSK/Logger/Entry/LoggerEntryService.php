@@ -34,7 +34,7 @@ class LoggerEntryService extends EntityService
      * Сохранение объекта
      * Каждый сохраняемый объект запоминаем, если запрашивается сохранение с таким же object_full_id
      * то смотрим есть ли изменения по сравнению с уже сохраненным.
-     * Если нет то не сохраняем. если есть то переписываем уже сохраненый
+     * Если нет, то не сохраняем. Если есть, то переписываем уже сохраненный
      * @param InterfaceEntity $object
      * @param string $object_full_id
      * @param string $comment
@@ -46,7 +46,7 @@ class LoggerEntryService extends EntityService
         string $object_full_id,
         string $comment,
         ?string $user_full_id
-    ) {
+    ): void {
         $ip_address = Network::getClientIpRemoteAddr();
 
         /** @var LoggerEntry[] $saved_entries_arr */
@@ -84,7 +84,7 @@ class LoggerEntryService extends EntityService
      * @param null|string $user_full_id
      * @throws \Exception
      */
-    public function logObjectEvent(InterfaceEntity $object, string $comment, ?string $user_full_id)
+    public function logObjectEvent(InterfaceEntity $object, string $comment, ?string $user_full_id): void
     {
         $this->logObjectAndId($object, FullObjectId::getFullObjectId($object), $comment, $user_full_id);
     }
@@ -93,7 +93,7 @@ class LoggerEntryService extends EntityService
      * @param \DateTime $min_created_datetime
      * @param int $limit
      */
-    public function removePastLoggerEntries(\DateTime $min_created_datetime, int $limit)
+    public function removePastLoggerEntries(\DateTime $min_created_datetime, int $limit): void
     {
         $this->repository->removePastEntries($min_created_datetime, $limit);
     }

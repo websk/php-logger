@@ -16,14 +16,17 @@ use WebSK\Logger\Entry\LoggerEntryService;
  */
 class LoggerServiceProvider
 {
-    const DUMP_FILE_PATH = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'dumps' . DIRECTORY_SEPARATOR . 'db_logger.sql';
-    const DB_SERVICE_CONTAINER_ID = 'logger.db_service';
-    const DB_ID = 'db_logger';
+    const string DUMP_FILE_PATH = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'dumps' . DIRECTORY_SEPARATOR . 'db_logger.sql';
+    const string DB_SERVICE_CONTAINER_ID = 'logger.db_service';
+    const string DB_ID = 'db_logger';
+
+    const string SETTINGS_CONTAINER_ID = 'settings';
+    const string PARAM_DB = 'db';
 
     /**
      * @param ContainerInterface $container
      */
-    public static function register(ContainerInterface $container)
+    public static function register(ContainerInterface $container): void
     {
         /**
          * @param ContainerInterface $container
@@ -33,7 +36,7 @@ class LoggerServiceProvider
             return new LoggerEntryService(
                 LoggerEntry::class,
                 $container->get(LoggerEntryRepository::class),
-                CacheServiceProvider::getCacheService($container)
+                $container->get(CacheServiceProvider::SERVICE_CONTAINER_ID)
             );
         };
 
@@ -53,7 +56,9 @@ class LoggerServiceProvider
          * @return DBService
          */
         $container[self::DB_SERVICE_CONTAINER_ID] = function (ContainerInterface $container): DBService {
-            $db_config = $container['settings']['db'][self::DB_ID];
+            $db_config = $container->get(
+                self::SETTINGS_CONTAINER_ID . '.' . self::PARAM_DB . '.' . self::DB_ID
+            );
 
             return DBServiceFactory::factoryMySQL($db_config);
         };
@@ -66,14 +71,5 @@ class LoggerServiceProvider
     public static function getEntryService(ContainerInterface $container): LoggerEntryService
     {
         return $container->get(LoggerEntryService::class);
-    }
-
-    /**
-     * @param ContainerInterface $container
-     * @return DBService
-     */
-    public static function getDBService(ContainerInterface $container): DBService
-    {
-        return $container->get(self::DB_SERVICE_CONTAINER_ID);
     }
 }

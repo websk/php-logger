@@ -4,12 +4,12 @@ namespace WebSK\Logger\RequestHandlers;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use WebSK\CRUD\CRUD;
 use WebSK\CRUD\Table\Filters\CRUDTableFilterEqualTimestampIntervalInline;
 use WebSK\Logger\LoggerConfig;
 use WebSK\Slim\RequestHandlers\BaseHandler;
 use WebSK\Views\LayoutDTO;
 use WebSK\Views\BreadcrumbItemDTO;
-use WebSK\CRUD\CRUDServiceProvider;
 use WebSK\CRUD\Table\CRUDTable;
 use WebSK\CRUD\Table\CRUDTableColumn;
 use WebSK\CRUD\Table\Filters\CRUDTableFilterLike;
@@ -25,11 +25,14 @@ use WebSK\Views\PhpRender;
  */
 class EntriesListHandler extends BaseHandler
 {
-    const FILTER_OBJECT_FULL_ID = 'object_full_id';
-    const FILTER_USER_FULL_ID = 'user_full_id';
-    const FILTER_USER_IP = 'user_ip';
-    const FILTER_CREATED_AT_TS_START = 'created_at_ts_start';
-    const FILTER_CREATED_AT_TS_END = 'created_at_ts_end';
+    const string FILTER_OBJECT_FULL_ID = 'object_full_id';
+    const string FILTER_USER_FULL_ID = 'user_full_id';
+    const string FILTER_USER_IP = 'user_ip';
+    const string FILTER_CREATED_AT_TS_START = 'created_at_ts_start';
+    const string FILTER_CREATED_AT_TS_END = 'created_at_ts_end';
+
+    /** @Inject */
+    protected CRUD $crud_service;
 
     /**
      * @param ServerRequestInterface $request
@@ -39,7 +42,7 @@ class EntriesListHandler extends BaseHandler
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $crud_table_obj = CRUDServiceProvider::getCrud($this->container)->createTable(
+        $crud_table_obj = $this->crud_service->createTable(
             LoggerEntry::class,
             null,
             [
@@ -48,7 +51,7 @@ class EntriesListHandler extends BaseHandler
                     new CRUDTableWidgetTextWithLink(
                         LoggerEntry::_ID,
                         function (LoggerEntry $logger_entry) {
-                            return $this->pathFor(EntryEditHandler::class, ['entry_id' =>$logger_entry->getId()]);
+                            return $this->urlFor(EntryEditHandler::class, ['entry_id' =>$logger_entry->getId()]);
                         }
                     )
                 ),
@@ -57,7 +60,7 @@ class EntriesListHandler extends BaseHandler
                     new CRUDTableWidgetTextWithLink(
                         LoggerEntry::_OBJECT_FULL_ID,
                         function (LoggerEntry $logger_entry) {
-                            return $this->pathFor(ObjectEntriesListHandler::class, ['object_full_id' => urlencode($logger_entry->getObjectFullId())]);
+                            return $this->urlFor(ObjectEntriesListHandler::class, ['object_full_id' => urlencode($logger_entry->getObjectFullId())]);
                         }
                     )
                 ),
