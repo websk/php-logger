@@ -6,12 +6,12 @@
     "ext-mbstring": "*",
     "slim/slim": "4.14.*",
     "websk/php-config": "2.0.*",
-    "websk/php-db": "2.0.*",
-    "websk/php-crud": "2.1.*",
+    "websk/php-db": "2.1.*",
+    "websk/php-crud": "2.3.*",
     "websk/php-entity": "2.2.*",
-    "websk/php-slim": "2.2.*",
-    "websk/php-utils": "2.0.*",
-    "websk/php-view": "2.2.*"
+    "websk/php-slim": "2.3.*",
+    "websk/php-utils": "2.1.*",
+    "websk/php-view": "2.3.*"
   },
   "autoload": {
     "psr-4": {
