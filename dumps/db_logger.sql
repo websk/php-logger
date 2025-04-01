@@ -9,3 +9,4 @@ ALTER TABLE logger_entry ADD KEY created_at_ts_user_full_id (created_at_ts, user
 ALTER TABLE logger_entry ADD COLUMN request_uri_with_server_name varchar(2000) DEFAULT '' /* j012j29jdh932h39 */;
 ALTER TABLE logger_entry ADD COLUMN http_user_agent varchar(255) DEFAULT '' /* 9h1928hd083h931 */;
 ALTER TABLE logger_entry ADD KEY user_full_id (user_full_id)  /* h8d732g32d9g3 */;
+ALTER TABLE logger_entry MODIFY serialized_object mediumtext /* nc9348h0gh8490g */;

@@ -52,12 +52,14 @@ class LoggerEntryService extends EntityService
         /** @var LoggerEntry[] $saved_entries_arr */
         static $saved_entries_arr = [];
 
+        $serialized_object = serialize($object);
+
         if (!array_key_exists($object_full_id, $saved_entries_arr)) {
             $new_entry_obj = new LoggerEntry();
             $new_entry_obj->setUserIp($ip_address);
             $new_entry_obj->setUserFullid($user_full_id);
             $new_entry_obj->setObjectFullid($object_full_id);
-            $new_entry_obj->setSerializedObject(serialize($object));
+            $new_entry_obj->setSerializedObject($serialized_object);
             $new_entry_obj->setComment($comment);
             $new_entry_obj->setRequestUriWithServerName(($_SERVER['SERVER_NAME'] ?? '') . ($_SERVER['REQUEST_URI'] ?? ''));
             $new_entry_obj->setHttpUserAgent($_SERVER['HTTP_USER_AGENT'] ?? '');
@@ -67,7 +69,6 @@ class LoggerEntryService extends EntityService
             $saved_entries_arr[$object_full_id] = $new_entry_obj;
         } else {
             $saved_entry_obj = $saved_entries_arr[$object_full_id];
-            $serialized_object = serialize($object);
             if ($serialized_object != $saved_entry_obj->getSerializedObject()) {
                 $saved_entry_obj->setSerializedObject($serialized_object);
 
