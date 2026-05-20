@@ -63,12 +63,12 @@ class LoggerDemoApp extends App
         // Demo routing. Redirects
         $this->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
             return $response->withHeader('Location', Router::urlFor(EntriesListHandler::class))
-                ->withStatus(StatusCodeInterface::STATUS_FOUND);
+                ->withStatus(StatusCodeInterface::STATUS_TEMPORARY_REDIRECT);
         });
 
         $this->get(LoggerConfig::getAdminMainPageUrl(), function (ServerRequestInterface $request, ResponseInterface $response) {
             return $response->withHeader('Location', Router::urlFor(EntriesListHandler::class))
-                ->withStatus(StatusCodeInterface::STATUS_FOUND);
+                ->withStatus(StatusCodeInterface::STATUS_TEMPORARY_REDIRECT);
         });
 
         $this->group('/admin', function (RouteCollectorProxyInterface $route_collector_proxy) {
