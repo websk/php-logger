@@ -16,7 +16,7 @@ class LoggerConfig
      */
     public static function getMainLayout(): string
     {
-        return ConfWrapper::value('logger.layout_main', ConfWrapper::value('layout.main'));
+        return self::getString('logger.layout_main', self::getString('layout.main'));
     }
 
     /**
@@ -24,7 +24,7 @@ class LoggerConfig
      */
     public static function getMainPageUrl(): string
     {
-        return ConfWrapper::value('logger.main_page_url', '/');
+        return self::getString('logger.main_page_url', '/');
     }
 
     /**
@@ -32,7 +32,7 @@ class LoggerConfig
      */
     public static function getAdminLayout(): string
     {
-        return ConfWrapper::value('logger.layout_admin', ConfWrapper::value('layout.admin'));
+        return self::getString('logger.layout_admin', self::getString('layout.admin'));
     }
 
     /**
@@ -40,7 +40,7 @@ class LoggerConfig
      */
     public static function getAdminMainPageUrl(): string
     {
-        return ConfWrapper::value('logger.admin_main_page_url', '/admin');
+        return self::getString('logger.admin_main_page_url', '/admin');
     }
 
     /**
@@ -48,7 +48,7 @@ class LoggerConfig
      */
     public static function getUserProfileRouteName(): string
     {
-        return ConfWrapper::value('logger.user_profile_route_name', '');
+        return self::getString('logger.user_profile_route_name', '');
     }
 
     /**
@@ -56,6 +56,21 @@ class LoggerConfig
      */
     public static function getUserServiceContainerName(): ?string
     {
-        return ConfWrapper::value('logger.user_service_container_name', null);
+        $value = ConfWrapper::value('logger.user_service_container_name', null);
+        if ($value !== null && !is_string($value)) {
+            throw new \UnexpectedValueException('logger.user_service_container_name must be a string or null');
+        }
+
+        return $value;
+    }
+
+    private static function getString(string $path, string $default = ''): string
+    {
+        $value = ConfWrapper::value($path, $default);
+        if (!is_string($value)) {
+            throw new \UnexpectedValueException($path . ' must be a string');
+        }
+
+        return $value;
     }
 }

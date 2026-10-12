@@ -23,14 +23,21 @@ class LoggerEntryRepository extends EntityRepository
             [$current_entry_id, $current_entry_full_id]
         );
 
-        return (int)$prev_record_id;
+        if ($prev_record_id === false || $prev_record_id === null) {
+            return 0;
+        }
+        if (!is_int($prev_record_id) && !(is_string($prev_record_id) && ctype_digit($prev_record_id))) {
+            throw new \UnexpectedValueException('Previous logger entry ID must be an integer');
+        }
+
+        return (int) $prev_record_id;
     }
 
     /**
      * @param \DateTime $min_created_datetime
      * @param int $limit
      */
-    public function removePastEntries(\DateTime $min_created_datetime, int $limit)
+    public function removePastEntries(\DateTime $min_created_datetime, int $limit): void
     {
         $db_table_name = $this->getTableName();
 

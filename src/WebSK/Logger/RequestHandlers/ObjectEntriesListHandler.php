@@ -2,6 +2,7 @@
 
 namespace WebSK\Logger\RequestHandlers;
 
+use DI\Attribute\Inject;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use WebSK\CRUD\CRUD;
@@ -32,7 +33,7 @@ class ObjectEntriesListHandler extends BaseHandler
     const string FILTER_CREATED_AT_TS_START = 'created_at_ts_start';
     const string FILTER_CREATED_AT_TS_END = 'created_at_ts_end';
 
-    /** @Inject */
+    #[Inject]
     protected CRUD $crud_service;
 
     /**
@@ -52,7 +53,7 @@ class ObjectEntriesListHandler extends BaseHandler
                     new CRUDTableWidgetTextWithLink(
                         LoggerEntry::_ID,
                         function (LoggerEntry $logger_entry) {
-                            return $this->urlFor(EntryEditHandler::class, ['entry_id' =>$logger_entry->getId()]);
+                            return $this->urlFor(EntryEditHandler::class, ['entry_id' => (string)$logger_entry->getId()]);
                         }
                     )
                 ),

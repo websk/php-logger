@@ -2,8 +2,8 @@
 
 namespace WebSK\Logger\Demo;
 
+use DI\Container;
 use Fig\Http\Message\StatusCodeInterface;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
@@ -14,6 +14,7 @@ use Slim\Interfaces\RouteParserInterface;
 use Slim\Psr7\Factory\ResponseFactory;
 use WebSK\Cache\CacheServiceProvider;
 use WebSK\CRUD\CRUDServiceProvider;
+use WebSK\CRUD\MutableContainerAdapter;
 use WebSK\Logger\LoggerConfig;
 use WebSK\Logger\LoggerRoutes;
 use WebSK\Logger\LoggerServiceProvider;
@@ -24,21 +25,23 @@ use WebSK\Slim\Router;
  * Class LoggerDemoApp
  * @package WebSK\Logger\Demo
  */
+/** @extends App<Container> */
 class LoggerDemoApp extends App
 {
     /**
      * LoggerDemoApp constructor.
-     * @param ContainerInterface $container
+     * @param Container $container
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(Container $container)
     {
         parent::__construct(new ResponseFactory(), $container);
 
         $this->registerRouterSettings($container);
 
-        CacheServiceProvider::register($container);
-        LoggerServiceProvider::register($container);
-        CRUDServiceProvider::register($container);
+        $mutable_container = new MutableContainerAdapter($container);
+        CacheServiceProvider::register($mutable_container);
+        LoggerServiceProvider::register($mutable_container);
+        CRUDServiceProvider::register($mutable_container);
 
         $this->registerRoutes();
 
@@ -47,12 +50,16 @@ class LoggerDemoApp extends App
     }
 
     /**
-     * @param ContainerInterface $container
+     * @param Container $container
      */
-    protected function registerRouterSettings(ContainerInterface $container): void
+    protected function registerRouterSettings(Container $container): void
     {
         $route_collector = $this->getRouteCollector();
-        $route_collector->setDefaultInvocationStrategy($container->get(InvocationStrategyInterface::class));
+        $invocation_strategy = $container->get(InvocationStrategyInterface::class);
+        if (!$invocation_strategy instanceof InvocationStrategyInterface) {
+            throw new \UnexpectedValueException('Slim invocation strategy is not registered');
+        }
+        $route_collector->setDefaultInvocationStrategy($invocation_strategy);
         $route_parser = $route_collector->getRouteParser();
 
         $container->set(RouteParserInterface::class, $route_parser);

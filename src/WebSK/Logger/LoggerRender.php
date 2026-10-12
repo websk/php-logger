@@ -20,6 +20,10 @@ class LoggerRender
     public static function getLoggerLinkForEntityObj(InterfaceEntity $entity_obj): string
     {
         $entity_full_id = FullObjectId::getFullObjectId($entity_obj);
+        if ($entity_full_id === null) {
+            throw new \UnexpectedValueException('Could not build the logger object identifier');
+        }
+
         return Router::urlFor(
             ObjectEntriesListHandler::class,
             ['object_full_id' => urlencode($entity_full_id)]

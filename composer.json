@@ -1,21 +1,51 @@
 {
   "name": "websk/php-logger",
   "description": "Entity Logger",
+  "license": "MIT",
   "require": {
     "php": "^8.3",
     "ext-mbstring": "*",
-    "slim/slim": "4.14.*",
-    "websk/php-config": "2.0.*",
-    "websk/php-db": "2.1.*",
-    "websk/php-crud": "2.3.*",
-    "websk/php-entity": "2.2.*",
-    "websk/php-slim": "2.3.*",
-    "websk/php-utils": "2.1.*",
-    "websk/php-view": "2.3.*"
+    "ext-pdo_mysql": "*",
+    "slim/slim": "4.15.*",
+    "websk/php-config": "2.2.*",
+    "websk/php-db": "3.0.*",
+    "websk/php-crud": "3.0.*",
+    "websk/php-entity": "3.0.*",
+    "websk/php-slim": "2.4.*",
+    "websk/php-utils": "3.0.*",
+    "websk/php-view": "3.1.*"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.3",
+    "phpunit/phpunit": "^12.5"
   },
   "autoload": {
     "psr-4": {
-      "": "src/"
+      "WebSK\\": "src/WebSK/"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "WebSK\\Logger\\Tests\\": "tests/"
+    }
+  },
+  "archive": {
+    "exclude": [
+      "/.idea",
+      "/.phpunit.cache",
+      "/config/config.php",
+      "/vendor"
+    ]
+  },
+  "scripts": {
+    "lint": "find src public config views tests -name '*.php' -print0 | xargs -0 -n1 php -l",
+    "test": "phpunit --exclude-group mysql",
+    "test:mysql": "phpunit --group mysql",
+    "phpstan": "phpstan analyse --no-progress --debug",
+    "check": [
+      "@lint",
+      "@test",
+      "@phpstan"
+    ]
   }
 }

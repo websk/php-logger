@@ -76,7 +76,7 @@ class EntryEditHandler extends BaseHandler
     {
         $html = '';
 
-        $current_record_obj = LoggerServiceProvider::getEntryService($this->container)->getById($current_record_id);
+        $current_record_obj = $this->getRequiredEntry($current_record_id);
 
         $prev_record_id = LoggerServiceProvider::getEntryService($this->container)
             ->getPrevRecordEntryId($current_record_id);
@@ -85,17 +85,17 @@ class EntryEditHandler extends BaseHandler
             return '<div>Предыдущая запись истории для этого объекта не найдена.</div>';
         }
 
-        $prev_record_obj = LoggerServiceProvider::getEntryService($this->container)->getById($prev_record_id);
+        $prev_record_obj = $this->getRequiredEntry($prev_record_id);
 
 
-        $edit_url = $this->urlFor(EntryEditHandler::class, ['entry_id' => $prev_record_id]);
+        $edit_url = $this->urlFor(EntryEditHandler::class, ['entry_id' => (string)$prev_record_id]);
 
         // определение дельты
 
         $html .= '<h2>Изменения относительно <a href="' . $edit_url . '">предыдущей версии</a></h2>';
 
-        $current_obj = unserialize($current_record_obj->getSerializedObject());
-        $prev_obj = unserialize($prev_record_obj->getSerializedObject());
+        $current_obj = $this->unserializeLoggedValue($current_record_obj->getSerializedObject());
+        $prev_obj = $this->unserializeLoggedValue($prev_record_obj->getSerializedObject());
 
         $current_record_as_list = $this->convertValueToList($current_obj);
         ksort($current_record_as_list); // сортируем для красоты
@@ -150,19 +150,15 @@ class EntryEditHandler extends BaseHandler
         return $html;
     }
 
-    /**
-     * @param $v
-     * @return string
-     */
-    protected function renderDeltaValue($v): string
+    protected function renderDeltaValue(string $value): string
     {
         $limit = 300;
 
-        if (strlen($v) < $limit) {
-            return $v;
+        if (strlen($value) < $limit) {
+            return $value;
         }
 
-        return mb_substr($v, 0, $limit) . '...';
+        return mb_substr($value, 0, $limit) . '...';
     }
 
     /**
@@ -171,38 +167,44 @@ class EntryEditHandler extends BaseHandler
      */
     protected function getUserNameWithLinkForEntry(LoggerEntry $logger_entry): string
     {
+        $user_full_id = $logger_entry->getUserFullId();
         $user_id = LoggerServiceProvider::getEntryService($this->container)->getUserIdForEntry($logger_entry);
 
         if (!$user_id) {
-            if (is_null($logger_entry->getUserFullId())) {
-                return '';
-            }
-
-            return $logger_entry->getUserFullId();
+            return $user_full_id ?? '';
         }
 
-        $user_service_container_name = LoggerConfig::getUserProfileRouteName();
-        if ($user_service_container_name) {
-            $user_service = $this->container->get($user_service_container_name);
-            if ($user_service instanceof InterfaceEntityService) {
-                $user_obj = $user_service->getById($user_id, false);
-            }
-
-            if (is_null($user_obj)) {
-                return $logger_entry->getUserFullId();
-            }
-
-            if (!method_exists($user_obj, 'getName')) {
-                return $logger_entry->getUserFullId();
-            }
-        }
-
+        $user_service_container_name = LoggerConfig::getUserServiceContainerName();
         $user_profile_route_name = LoggerConfig::getUserProfileRouteName();
-        if (!$user_profile_route_name) {
-            return $logger_entry->getUserFullId();
+        if ($user_service_container_name === null || $user_service_container_name === '' || $user_profile_route_name === '') {
+            return $user_full_id ?? '';
         }
 
-        return '<a href="' . $this->urlFor($user_profile_route_name, ['user_id' => $user_obj->getId()]) .'">' . $user_obj->getName() . '</a>';
+        $user_service = $this->container->get($user_service_container_name);
+        if (!$user_service instanceof InterfaceEntityService) {
+            return $user_full_id ?? '';
+        }
+
+        $user_obj = $user_service->getById($user_id, false);
+        if ($user_obj === null || !method_exists($user_obj, 'getName')) {
+            return $user_full_id ?? '';
+        }
+
+        $user_name = $user_obj->getName();
+        if (!is_string($user_name) && !$user_name instanceof \Stringable) {
+            return $user_full_id ?? '';
+        }
+
+        $resolved_user_id = $user_obj->getId();
+        if ($resolved_user_id === null) {
+            return $user_full_id ?? '';
+        }
+
+        return '<a href="'
+            . Sanitize::sanitizeTagContent(
+                $this->urlFor($user_profile_route_name, ['user_id' => (string)$resolved_user_id])
+            )
+            . '">' . Sanitize::sanitizeTagContent((string)$user_name) . '</a>';
     }
 
     /**
@@ -211,7 +213,7 @@ class EntryEditHandler extends BaseHandler
      */
     protected function renderRecordHead(int $record_id): string
     {
-        $entry_obj = LoggerServiceProvider::getEntryService($this->container)->getById($record_id);
+        $entry_obj = $this->getRequiredEntry($record_id);
 
         $user_str = $this->getUserNameWithLinkForEntry($entry_obj);
 
@@ -244,9 +246,9 @@ class EntryEditHandler extends BaseHandler
     {
         $html = '<h2>Все поля объекта</h2>';
 
-        $record_obj = LoggerServiceProvider::getEntryService($this->container)->getById($record_id);
+        $record_obj = $this->getRequiredEntry($record_id);
 
-        $record_objs = unserialize($record_obj->getSerializedObject());
+        $record_objs = $this->unserializeLoggedValue($record_obj->getSerializedObject());
 
         $value_as_list = $this->convertValueToList($record_objs);
         ksort($value_as_list);
@@ -254,13 +256,15 @@ class EntryEditHandler extends BaseHandler
         $last_path = '';
 
         foreach ($value_as_list as $path => $value) {
-            $path_to_display = $path;
+            $path_to_display = Sanitize::sanitizeTagContent($path);
 
             if ($this->getPathWithoutLastElement($last_path) == $this->getPathWithoutLastElement($path)) {
                 $elems = explode('.', $path);
                 $last_elem = array_pop($elems);
                 if (count($elems)) {
-                    $path_to_display = '<span style="color: #999">' . implode('.', $elems) . '</span>.' . $last_elem;
+                    $path_to_display = '<span style="color: #999">'
+                        . Sanitize::sanitizeTagContent(implode('.', $elems))
+                        . '</span>.' . Sanitize::sanitizeTagContent((string)$last_elem);
                 }
             }
 
@@ -274,7 +278,7 @@ class EntryEditHandler extends BaseHandler
                 $html .= '<div style="padding: 5px 0; border-bottom: 1px solid #ddd;">';
 
                 $html .= '<span style="padding-right: 50px;"><b>' . $path_to_display . '</b></span>';
-                $html .= $value;
+                $html .= Sanitize::sanitizeTagContent($value);
                 $html .= '</div>';
             }
 
@@ -286,21 +290,29 @@ class EntryEditHandler extends BaseHandler
     }
 
     /**
-     * @param $value_value
-     * @param string $value_path
-     * @return array
-     * @throws \ReflectionException
+     * @param \SplObjectStorage<object, mixed>|null $visited_objects
+     * @return array<string, string>
      */
-    protected function convertValueToList($value_value, string $value_path = ''): array
+    protected function convertValueToList(
+        mixed $value_value,
+        string $value_path = '',
+        ?\SplObjectStorage $visited_objects = null
+    ): array
     {
-        if (is_null($value_value)) {
-            return array($value_path => '#NULL#');
+        if ($value_value === null) {
+            return [$value_path => '#NULL#'];
         }
 
         if (is_scalar($value_value)) {
-            return array($value_path => $value_value);
+            if (is_bool($value_value)) {
+                return [$value_path => $value_value ? '#TRUE#' : '#FALSE#'];
+            }
+
+            return [$value_path => (string)$value_value];
         }
 
+        $visited_objects ??= new \SplObjectStorage();
+        /** @var array<array-key, mixed>|null $value_as_array */
         $value_as_array = null;
         $output_array = [];
 
@@ -309,9 +321,13 @@ class EntryEditHandler extends BaseHandler
         }
 
         if (is_object($value_value)) {
+            if ($visited_objects->offsetExists($value_value)) {
+                return [$value_path => '#RECURSION#'];
+            }
+            $visited_objects->offsetSet($value_value, null);
             $value_as_array = [];
 
-            foreach ($value_value as $property_name => $property_value) {
+            foreach (get_object_vars($value_value) as $property_name => $property_value) {
                 $value_as_array[$property_name] = $property_value;
             }
 
@@ -324,6 +340,9 @@ class EntryEditHandler extends BaseHandler
                 if ($prop_obj->isStatic()) {
                     continue;
                 }
+                if (!$prop_obj->isInitialized($value_value)) {
+                    continue;
+                }
 
                 $name = $prop_obj->getName();
                 $value = $prop_obj->getValue($value_value);
@@ -332,20 +351,42 @@ class EntryEditHandler extends BaseHandler
         }
 
         if (!is_array($value_as_array)) {
-            throw new \Exception('Не удалось привести значение к массиву');
+            throw new \UnexpectedValueException('Не удалось привести значение к массиву');
         }
 
         foreach ($value_as_array as $key => $value) {
-            $key_path = $key;
+            $key_path = (string)$key;
             if ($value_path != '') {
                 $key_path = $value_path . '.' . $key;
             }
 
-            $value_output = $this->convertValueToList($value, $key_path);
+            $value_output = $this->convertValueToList($value, $key_path, $visited_objects);
             $output_array = array_merge($output_array, $value_output);
         }
 
         return $output_array;
+    }
+
+    private function unserializeLoggedValue(string $serialized_value): mixed
+    {
+        // The logger stores application entities and therefore must restore their classes.
+        // The logger database is consequently a trusted input boundary.
+        $value = @unserialize($serialized_value, ['allowed_classes' => true]);
+        if ($value === false && $serialized_value !== 'b:0;') {
+            throw new \UnexpectedValueException('The logger entry contains invalid serialized data');
+        }
+
+        return $value;
+    }
+
+    private function getRequiredEntry(int $entry_id): LoggerEntry
+    {
+        $entry = LoggerServiceProvider::getEntryService($this->container)->getById($entry_id);
+        if ($entry === null) {
+            throw new \UnexpectedValueException('Logger entry ' . $entry_id . ' was not found');
+        }
+
+        return $entry;
     }
 
     /**

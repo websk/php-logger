@@ -15,13 +15,11 @@ use WebSK\Logger\RequestHandlers\ObjectEntriesListHandler;
 class LoggerRoutes
 {
 
-    /**
-     * @param RouteCollectorProxyInterface $route_collector_proxy
-     */
+    /** @param RouteCollectorProxyInterface<\Psr\Container\ContainerInterface|null> $route_collector_proxy */
     public static function registerAdmin(RouteCollectorProxyInterface $route_collector_proxy): void
     {
-        $route_collector_proxy->group('/logger', function (RouteCollectorProxyInterface $route_collector_proxy) {
-            $route_collector_proxy->group('/entry', function (RouteCollectorProxyInterface $route_collector_proxy) {
+        $route_collector_proxy->group('/logger', function (RouteCollectorProxyInterface $route_collector_proxy): void {
+            $route_collector_proxy->group('/entry', function (RouteCollectorProxyInterface $route_collector_proxy): void {
                 $route_collector_proxy->map([RequestMethodInterface::METHOD_GET, RequestMethodInterface::METHOD_POST], '', EntriesListHandler::class)
                     ->setName(EntriesListHandler::class);
 

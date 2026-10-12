@@ -20,6 +20,10 @@ class CompareHTML
     {
         static $include_script;
 
+        $left_content_json = self::encodeJson($left_content);
+        $right_content_json = self::encodeJson($right_content);
+        $element_id_json = self::encodeJson($element_id);
+
         $html = '';
 
         if (!isset($include_script)) {
@@ -33,19 +37,20 @@ class CompareHTML
             <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/diff2html@3.4.3/bundles/js/diff2html-ui.min.js"></script>
             <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/diff@5.0.0/dist/diff.min.js"></script>
             <?php
-            $html .= ob_get_clean();
+            $html .= self::getOutputBuffer();
         }
 
         ob_start();
         ?>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                var left_content = $('<textarea />').html(`<?php echo Sanitize::sanitizeTagContent($left_content); ?>`).text();
-                var right_content = $('<textarea />').html(`<?php echo Sanitize::sanitizeTagContent($right_content); ?>`).text();
+                var left_content = <?php echo $left_content_json; ?>;
+                var right_content = <?php echo $right_content_json; ?>;
+                var element_id = <?php echo $element_id_json; ?>;
 
-                var diff = window.Diff.createTwoFilesPatch("<?php echo $element_id; ?>", "<?php echo $element_id; ?>", left_content, right_content);
+                var diff = window.Diff.createTwoFilesPatch(element_id, element_id, left_content, right_content);
 
-                const targetElement = document.getElementById('<?php echo $element_id; ?>');
+                const targetElement = document.getElementById(element_id);
                 var diff2htmlUi = new window.Diff2HtmlUI(
                     targetElement,
                     diff,
@@ -60,11 +65,31 @@ class CompareHTML
             });
         </script>
 
-        <div id="<?php echo $element_id; ?>"></div>
+        <div id="<?php echo Sanitize::sanitizeAttrValue($element_id); ?>"></div>
 
         <?php
-        $html .= ob_get_clean();
+        $html .= self::getOutputBuffer();
 
         return $html;
+    }
+
+    private static function encodeJson(string $value): string
+    {
+        $encoded = json_encode(
+            $value,
+            JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR
+        );
+
+        return $encoded;
+    }
+
+    private static function getOutputBuffer(): string
+    {
+        $output = ob_get_clean();
+        if ($output === false) {
+            throw new \RuntimeException('Could not read the compare output buffer');
+        }
+
+        return $output;
     }
 }

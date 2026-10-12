@@ -10,3 +10,14 @@ ALTER TABLE logger_entry ADD COLUMN request_uri_with_server_name varchar(2000) D
 ALTER TABLE logger_entry ADD COLUMN http_user_agent varchar(255) DEFAULT '' /* 9h1928hd083h931 */;
 ALTER TABLE logger_entry ADD KEY user_full_id (user_full_id)  /* h8d732g32d9g3 */;
 ALTER TABLE logger_entry MODIFY serialized_object mediumtext /* nc9348h0gh8490g */;
+UPDATE logger_entry SET serialized_object = '' WHERE serialized_object IS NULL /* logger85_serialized_not_null_data */;
+ALTER TABLE logger_entry MODIFY serialized_object mediumtext NOT NULL /* logger85_serialized_not_null */;
+UPDATE logger_entry SET user_ip = '' WHERE user_ip IS NULL /* logger85_user_ip_not_null_data */;
+ALTER TABLE logger_entry MODIFY user_ip varchar(255) NOT NULL DEFAULT '' /* logger85_user_ip_not_null */;
+UPDATE logger_entry SET comment = '' WHERE comment IS NULL /* logger85_comment_not_null_data */;
+ALTER TABLE logger_entry MODIFY comment text NOT NULL /* logger85_comment_not_null */;
+UPDATE logger_entry SET request_uri_with_server_name = '' WHERE request_uri_with_server_name IS NULL /* logger85_uri_not_null_data */;
+ALTER TABLE logger_entry MODIFY request_uri_with_server_name varchar(2000) NOT NULL DEFAULT '' /* logger85_uri_not_null */;
+UPDATE logger_entry SET http_user_agent = '' WHERE http_user_agent IS NULL /* logger85_user_agent_not_null_data */;
+ALTER TABLE logger_entry MODIFY http_user_agent varchar(255) NOT NULL DEFAULT '' /* logger85_user_agent_not_null */;
+ALTER TABLE logger_entry ADD KEY object_full_id_id (object_full_id, id) /* logger85_object_history_index */;

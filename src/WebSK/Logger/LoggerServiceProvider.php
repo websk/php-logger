@@ -23,20 +23,25 @@ class LoggerServiceProvider
     const string SETTINGS_CONTAINER_ID = 'settings';
     const string PARAM_DB = 'db';
 
-    /**
-     * @param ContainerInterface $container
-     */
-    public static function register(ContainerInterface $container): void
+    /** @param ContainerInterface&\ArrayAccess<array-key, mixed> $container */
+    public static function register(ContainerInterface&\ArrayAccess $container): void
     {
         /**
          * @param ContainerInterface $container
          * @return LoggerEntryService
          */
-        $container[LoggerEntryService::class] = function (ContainerInterface $container) {
+        $container[LoggerEntryService::class] = static function (ContainerInterface $container): LoggerEntryService {
+            $repository = $container->get(LoggerEntryRepository::class);
+            if (!$repository instanceof LoggerEntryRepository) {
+                throw new \UnexpectedValueException('Logger entry repository is not registered');
+            }
+
+            $cache_service = CacheServiceProvider::getCacheService($container);
+
             return new LoggerEntryService(
                 LoggerEntry::class,
-                $container->get(LoggerEntryRepository::class),
-                $container->get(CacheServiceProvider::SERVICE_CONTAINER_ID)
+                $repository,
+                $cache_service
             );
         };
 
@@ -44,10 +49,15 @@ class LoggerServiceProvider
          * @param ContainerInterface $container
          * @return LoggerEntryRepository
          */
-        $container[LoggerEntryRepository::class] = function (ContainerInterface $container) {
+        $container[LoggerEntryRepository::class] = static function (ContainerInterface $container): LoggerEntryRepository {
+            $db_service = $container->get(self::DB_SERVICE_CONTAINER_ID);
+            if (!$db_service instanceof DBService) {
+                throw new \UnexpectedValueException('Logger database service is not registered');
+            }
+
             return new LoggerEntryRepository(
                 LoggerEntry::class,
-                $container->get(self::DB_SERVICE_CONTAINER_ID)
+                $db_service
             );
         };
 
@@ -55,10 +65,19 @@ class LoggerServiceProvider
          * @param ContainerInterface $container
          * @return DBService
          */
-        $container[self::DB_SERVICE_CONTAINER_ID] = function (ContainerInterface $container): DBService {
+        $container[self::DB_SERVICE_CONTAINER_ID] = static function (ContainerInterface $container): DBService {
             $db_config = $container->get(
                 self::SETTINGS_CONTAINER_ID . '.' . self::PARAM_DB . '.' . self::DB_ID
             );
+            if (!is_array($db_config)) {
+                throw new \UnexpectedValueException('Logger database configuration must be an array');
+            }
+
+            foreach ($db_config as $key => $value) {
+                if (!is_string($key) || !is_string($value)) {
+                    throw new \UnexpectedValueException('Logger database configuration must contain string values');
+                }
+            }
 
             return DBServiceFactory::factoryMySQL($db_config);
         };
@@ -70,6 +89,11 @@ class LoggerServiceProvider
      */
     public static function getEntryService(ContainerInterface $container): LoggerEntryService
     {
-        return $container->get(LoggerEntryService::class);
+        $entry_service = $container->get(LoggerEntryService::class);
+        if (!$entry_service instanceof LoggerEntryService) {
+            throw new \UnexpectedValueException('Logger entry service is not registered');
+        }
+
+        return $entry_service;
     }
 }
