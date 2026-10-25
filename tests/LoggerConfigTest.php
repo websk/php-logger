@@ -4,6 +4,7 @@ namespace WebSK\Logger\Tests;
 
 use PHPUnit\Framework\TestCase;
 use WebSK\Config\ConfWrapper;
+use WebSK\Cache\Engines\Memcached;
 use WebSK\Logger\LoggerConfig;
 
 final class LoggerConfigTest extends TestCase
@@ -32,6 +33,20 @@ final class LoggerConfigTest extends TestCase
         self::assertSame('/admin', LoggerConfig::getAdminMainPageUrl());
         self::assertSame('users', LoggerConfig::getUserServiceContainerName());
         self::assertSame('user.profile', LoggerConfig::getUserProfileRouteName());
+    }
+
+    public function testDefaultConfigurationUsesDocumentedMemcachedBackend(): void
+    {
+        $config = require dirname(__DIR__) . '/config/config.default.php';
+        self::assertIsArray($config);
+
+        $settings = $config['settings'] ?? null;
+        self::assertIsArray($settings);
+
+        $cache = $settings['cache'] ?? null;
+        self::assertIsArray($cache);
+
+        self::assertSame(Memcached::class, $cache['engine'] ?? null);
     }
 
     public function testRejectsInvalidConfigurationValueType(): void

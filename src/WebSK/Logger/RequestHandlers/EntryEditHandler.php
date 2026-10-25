@@ -44,7 +44,9 @@ class EntryEditHandler extends BaseHandler
             $html .= $this->delta($entry_id);
             $html .= $this->renderObjectFields($entry_id);
         } catch (\Throwable $e) {
-            $html .= '<div class="alert alert-danger">Структура объекта была изменена. Показ содержимого объекта невозможен.</div>';
+            $html .= '<div class="alert alert-danger" role="alert">'
+                . 'Структура объекта была изменена. Показ содержимого объекта невозможен.'
+                . '</div>';
         }
 
         $layout_dto = new LayoutDTO();
@@ -82,7 +84,9 @@ class EntryEditHandler extends BaseHandler
             ->getPrevRecordEntryId($current_record_id);
 
         if (!$prev_record_id) {
-            return '<div>Предыдущая запись истории для этого объекта не найдена.</div>';
+            return '<div class="alert alert-secondary mt-4" role="status">'
+                . 'Предыдущая запись истории для этого объекта не найдена.'
+                . '</div>';
         }
 
         $prev_record_obj = $this->getRequiredEntry($prev_record_id);
@@ -92,7 +96,9 @@ class EntryEditHandler extends BaseHandler
 
         // определение дельты
 
-        $html .= '<h2>Изменения относительно <a href="' . $edit_url . '">предыдущей версии</a></h2>';
+        $html .= '<h2 class="h4 mt-4">Изменения относительно <a href="'
+            . Sanitize::sanitizeAttrValue($edit_url)
+            . '">предыдущей версии</a></h2>';
 
         $current_obj = $this->unserializeLoggedValue($current_record_obj->getSerializedObject());
         $prev_obj = $this->unserializeLoggedValue($prev_record_obj->getSerializedObject());
@@ -106,32 +112,36 @@ class EntryEditHandler extends BaseHandler
         $deleted_rows = array_diff_key($prev_record_as_list, $current_record_as_list);
 
         if ($added_rows || $deleted_rows) {
-            $html .= '<table class="table">';
+            $html .= '<div class="table-responsive">';
+            $html .= '<table class="table table-bordered align-middle">';
             $html .= '<thead>';
             $html .= '<tr>';
-            $html .= '<th>Поле</th>';
-            $html .= '<th>Старое значение</th>';
-            $html .= '<th>Новое значение</th>';
+            $html .= '<th scope="col">Поле</th>';
+            $html .= '<th scope="col">Старое значение</th>';
+            $html .= '<th scope="col">Новое значение</th>';
             $html .= '</tr>';
             $html .= '</thead>';
+            $html .= '<tbody>';
 
             foreach ($added_rows as $k => $v) {
                 $html .= '<tr>';
-                $html .= '<td><b>' . $k . '</b></td>';
-                $html .= '<td style="background-color: #eee;"></td>';
+                $html .= '<th scope="row">' . Sanitize::sanitizeTagContent((string)$k) . '</th>';
+                $html .= '<td class="table-light"></td>';
                 $html .= '<td>' . Sanitize::sanitizeTagContent($this->renderDeltaValue($v)) . '</td>';
                 $html .= '</tr>';
             }
 
             foreach ($deleted_rows as $k => $v) {
                 $html .= '<tr>';
-                $html .= '<td><b>' . $k . '</b></td>';
+                $html .= '<th scope="row">' . Sanitize::sanitizeTagContent((string)$k) . '</th>';
                 $html .= '<td>' . Sanitize::sanitizeTagContent($this->renderDeltaValue($v)) . '</td>';
-                $html .= '<td style="background-color: #eee;"></td>';
+                $html .= '<td class="table-light"></td>';
                 $html .= '</tr>';
             }
 
+            $html .= '</tbody>';
             $html .= '</table>';
+            $html .= '</div>';
         }
 
         foreach ($current_record_as_list as $k => $current_v) {
@@ -171,37 +181,37 @@ class EntryEditHandler extends BaseHandler
         $user_id = LoggerServiceProvider::getEntryService($this->container)->getUserIdForEntry($logger_entry);
 
         if (!$user_id) {
-            return $user_full_id ?? '';
+            return Sanitize::sanitizeTagContent($user_full_id);
         }
 
         $user_service_container_name = LoggerConfig::getUserServiceContainerName();
         $user_profile_route_name = LoggerConfig::getUserProfileRouteName();
         if ($user_service_container_name === null || $user_service_container_name === '' || $user_profile_route_name === '') {
-            return $user_full_id ?? '';
+            return Sanitize::sanitizeTagContent($user_full_id);
         }
 
         $user_service = $this->container->get($user_service_container_name);
         if (!$user_service instanceof InterfaceEntityService) {
-            return $user_full_id ?? '';
+            return Sanitize::sanitizeTagContent($user_full_id);
         }
 
         $user_obj = $user_service->getById($user_id, false);
         if ($user_obj === null || !method_exists($user_obj, 'getName')) {
-            return $user_full_id ?? '';
+            return Sanitize::sanitizeTagContent($user_full_id);
         }
 
         $user_name = $user_obj->getName();
         if (!is_string($user_name) && !$user_name instanceof \Stringable) {
-            return $user_full_id ?? '';
+            return Sanitize::sanitizeTagContent($user_full_id);
         }
 
         $resolved_user_id = $user_obj->getId();
         if ($resolved_user_id === null) {
-            return $user_full_id ?? '';
+            return Sanitize::sanitizeTagContent($user_full_id);
         }
 
         return '<a href="'
-            . Sanitize::sanitizeTagContent(
+            . Sanitize::sanitizeAttrValue(
                 $this->urlFor($user_profile_route_name, ['user_id' => (string)$resolved_user_id])
             )
             . '">' . Sanitize::sanitizeTagContent((string)$user_name) . '</a>';
@@ -217,21 +227,33 @@ class EntryEditHandler extends BaseHandler
 
         $user_str = $this->getUserNameWithLinkForEntry($entry_obj);
 
-        $html = '<dl class="dl-horizontal jumbotron" style="margin-top:20px;padding: 10px;">';
-        $html .= '<dt style="padding: 5px 0;">Имя пользователя</dt>';
-        $html .= '<dd style="padding: 5px 0;">' . $user_str . '</dd>';
-        $html .= '<dt style="padding: 5px 0;">Время изменения</dt>';
-        $html .= '<dd style="padding: 5px 0;">' . date('d.m H:i', $entry_obj->getCreatedAtTs()) . '</dd>';
-        $html .= '<dt style="padding: 5px 0;">IP адрес</dt>';
-        $html .= '<dd style="padding: 5px 0;">' . $entry_obj->getUserIp() . '</dd>';
-        $html .= '<dt style="padding: 5px 0;">URL</dt>';
-        $html .= '<dd style="padding: 5px 0;">' . $entry_obj->getRequestUriWithServerName() . '</dd>';
-        $html .= '<dt style="padding: 5px 0;">User agent</dt>';
-        $html .= '<dd style="padding: 5px 0;">' . $entry_obj->getHttpUserAgent() . '</dd>';
-        $html .= '<dt style="padding: 5px 0;">Комментарий</dt>';
-        $html .= '<dd style="padding: 5px 0;">' . $entry_obj->getComment() . '</dd>';
-        $html .= '<dt style="padding: 5px 0;">Идентификатор</dt>';
-        $html .= '<dd style="padding: 5px 0;">' . $entry_obj->getObjectFullid() . '</dd>';
+        $html = '<dl class="row g-0 rounded border bg-light p-3 mt-3">';
+        $html .= '<dt class="col-sm-4 py-1">Имя пользователя</dt>';
+        $html .= '<dd class="col-sm-8 py-1 mb-0 text-break">' . $user_str . '</dd>';
+        $html .= '<dt class="col-sm-4 py-1">Время изменения</dt>';
+        $html .= '<dd class="col-sm-8 py-1 mb-0">'
+            . Sanitize::sanitizeTagContent(date('d.m H:i', $entry_obj->getCreatedAtTs()))
+            . '</dd>';
+        $html .= '<dt class="col-sm-4 py-1">IP адрес</dt>';
+        $html .= '<dd class="col-sm-8 py-1 mb-0 text-break">'
+            . Sanitize::sanitizeTagContent($entry_obj->getUserIp())
+            . '</dd>';
+        $html .= '<dt class="col-sm-4 py-1">URL</dt>';
+        $html .= '<dd class="col-sm-8 py-1 mb-0 text-break">'
+            . Sanitize::sanitizeTagContent($entry_obj->getRequestUriWithServerName())
+            . '</dd>';
+        $html .= '<dt class="col-sm-4 py-1">User agent</dt>';
+        $html .= '<dd class="col-sm-8 py-1 mb-0 text-break">'
+            . Sanitize::sanitizeTagContent($entry_obj->getHttpUserAgent())
+            . '</dd>';
+        $html .= '<dt class="col-sm-4 py-1">Комментарий</dt>';
+        $html .= '<dd class="col-sm-8 py-1 mb-0 text-break">'
+            . Sanitize::sanitizeTagContent($entry_obj->getComment())
+            . '</dd>';
+        $html .= '<dt class="col-sm-4 py-1">Идентификатор</dt>';
+        $html .= '<dd class="col-sm-8 py-1 mb-0 text-break">'
+            . Sanitize::sanitizeTagContent($entry_obj->getObjectFullid())
+            . '</dd>';
         $html .= '</dl>';
 
         return $html;
@@ -244,7 +266,8 @@ class EntryEditHandler extends BaseHandler
      */
     protected function renderObjectFields(int $record_id): string
     {
-        $html = '<h2>Все поля объекта</h2>';
+        $html = '<h2 class="h4 mt-4">Все поля объекта</h2>';
+        $html .= '<div class="list-group mb-4">';
 
         $record_obj = $this->getRequiredEntry($record_id);
 
@@ -262,29 +285,29 @@ class EntryEditHandler extends BaseHandler
                 $elems = explode('.', $path);
                 $last_elem = array_pop($elems);
                 if (count($elems)) {
-                    $path_to_display = '<span style="color: #999">'
+                    $path_to_display = '<span class="text-body-secondary">'
                         . Sanitize::sanitizeTagContent(implode('.', $elems))
                         . '</span>.' . Sanitize::sanitizeTagContent((string)$last_elem);
                 }
             }
 
             if (strlen($value) > 100) {
-                $html .= '<div style="padding: 5px 0; border-bottom: 1px solid #ddd;">';
-
-                $html .= '<div><b>' . $path_to_display . '</b></div>';
-                $html .= '<div><pre style="white-space: pre-wrap;">' . Sanitize::sanitizeTagContent($value) . '</pre></div>';
+                $html .= '<div class="list-group-item">';
+                $html .= '<div class="fw-semibold mb-2">' . $path_to_display . '</div>';
+                $html .= '<pre class="mb-0 text-wrap text-break">' . Sanitize::sanitizeTagContent($value) . '</pre>';
                 $html .= '</div>';
             } else {
-                $html .= '<div style="padding: 5px 0; border-bottom: 1px solid #ddd;">';
-
-                $html .= '<span style="padding-right: 50px;"><b>' . $path_to_display . '</b></span>';
-                $html .= Sanitize::sanitizeTagContent($value);
+                $html .= '<div class="list-group-item d-flex flex-column flex-md-row gap-1 gap-md-4">';
+                $html .= '<span class="fw-semibold flex-shrink-0">' . $path_to_display . '</span>';
+                $html .= '<span class="text-break">' . Sanitize::sanitizeTagContent($value) . '</span>';
                 $html .= '</div>';
             }
 
 
             $last_path = $path;
         }
+
+        $html .= '</div>';
 
         return $html;
     }
@@ -355,7 +378,8 @@ class EntryEditHandler extends BaseHandler
         }
 
         foreach ($value_as_array as $key => $value) {
-            $key_path = (string)$key;
+            $key = $this->normalizeSerializedPropertyName((string)$key);
+            $key_path = $key;
             if ($value_path != '') {
                 $key_path = $value_path . '.' . $key;
             }
@@ -365,6 +389,23 @@ class EntryEditHandler extends BaseHandler
         }
 
         return $output_array;
+    }
+
+    private function normalizeSerializedPropertyName(string $property_name): string
+    {
+        if (!str_starts_with($property_name, "\0")) {
+            return $property_name;
+        }
+
+        $parts = explode("\0", $property_name);
+        if (count($parts) < 3) {
+            return str_replace("\0", '', $property_name);
+        }
+
+        $name = (string)array_pop($parts);
+        $scope = (string)array_pop($parts);
+
+        return $scope === '*' || $scope === '' ? $name : $scope . '::' . $name;
     }
 
     private function unserializeLoggedValue(string $serialized_value): mixed

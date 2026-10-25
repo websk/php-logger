@@ -9,7 +9,7 @@
     "slim/slim": "4.15.*",
     "websk/php-config": "2.2.*",
     "websk/php-db": "3.0.*",
-    "websk/php-crud": "3.0.*",
+    "websk/php-crud": "4.0.*",
     "websk/php-entity": "3.0.*",
     "websk/php-slim": "2.4.*",
     "websk/php-utils": "3.0.*",
@@ -34,6 +34,8 @@
       "/.idea",
       "/.phpunit.cache",
       "/config/config.php",
+      "/node_modules",
+      "/public/assets",
       "/vendor"
     ]
   },

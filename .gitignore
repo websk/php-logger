@@ -2,3 +2,5 @@
 .phpunit.cache/
 vendor/
 config/config.php
+/node_modules/
+/public/assets/

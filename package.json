@@ -1,0 +1,25 @@
+{
+  "name": "websk-php-logger-demo",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20 <21",
+    "npm": ">=10 <11"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "7.3.1",
+    "@popperjs/core": "2.11.8",
+    "bootstrap": "5.3.8",
+    "diff": "8.0.3",
+    "diff2html": "3.4.56",
+    "highlight.js": "11.11.1",
+    "jquery": "3.7.1",
+    "jquery-ui": "1.14.2",
+    "jquery-validation": "1.22.1"
+  },
+  "scripts": {
+    "build": "node scripts/build-assets.mjs",
+    "check:assets": "node scripts/build-assets.mjs --check"
+  },
+  "license": "MIT"
+}

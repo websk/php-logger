@@ -1,0 +1,12 @@
+body {
+    background-color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+#content {
+    margin-bottom: 2rem;
+}
+
+.site-title {
+    font-size: 1.375rem;
+}

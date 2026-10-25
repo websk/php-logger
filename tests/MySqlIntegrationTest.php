@@ -90,6 +90,20 @@ final class MySqlIntegrationTest extends TestCase
 
         self::assertSame(200, $response->getStatusCode());
         self::assertStringContainsString('Integration.Entity.1', (string)$response->getBody());
+
+        $detail_request = (new ServerRequestFactory())->createServerRequest(
+            'GET',
+            '/admin/logger/entry/' . $entry->getId()
+        );
+        $container->set(ServerRequestInterface::class, $detail_request);
+        $detail_response = $app->handle($detail_request);
+        $detail_html = (string)$detail_response->getBody();
+
+        self::assertSame(200, $detail_response->getStatusCode());
+        self::assertStringContainsString('class="row g-0 rounded border bg-light p-3 mt-3"', $detail_html);
+        self::assertStringContainsString('class="list-group mb-4"', $detail_html);
+        self::assertStringNotContainsString('dl-horizontal', $detail_html);
+        self::assertStringNotContainsString('jumbotron', $detail_html);
     }
 
     private static function environmentValue(string $name, string $default): string

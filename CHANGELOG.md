@@ -6,6 +6,22 @@ The release history was reconstructed from remote Git tags, GitHub Releases, and
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-10-25
+
+### Changed
+
+- Updated `websk/php-crud` from 3.0.0 to 4.0.0 and migrated the demo frontend to its Bootstrap 5 asset stack.
+- Updated logger detail, comparison, and field markup to Bootstrap 5 components without inline presentation styles.
+- Replaced the comparison view's CDN dependencies with locally built, version-locked assets.
+- Verified the project with PHP 8.5.12, the latest security release in the PHP 8.5 series.
+
+### Fixed
+
+- Escaped logger metadata, field names, values, and generated link attributes before rendering them as HTML.
+- Aligned the default cache configuration and setup documentation on the Memcached PHP extension and server.
+- Normalized serialized protected and private property names so comparison targets contain valid DOM identifiers.
+- Published the Bootstrap source maps referenced by the bundled CSS and JavaScript files.
+
 ## [3.0.0] - 2026-10-12
 
 ### Added
@@ -135,7 +151,8 @@ The release history was reconstructed from remote Git tags, GitHub Releases, and
 
 - Initial release of the entity logger, including logger entities, repository and service classes, routes, request handlers, rendering, demo bootstrap, and schema dump.
 
-[Unreleased]: https://github.com/websk/php-logger/compare/3.0.0...HEAD
+[Unreleased]: https://github.com/websk/php-logger/compare/4.0.0...HEAD
+[4.0.0]: https://github.com/websk/php-logger/compare/3.0.0...4.0.0
 [3.0.0]: https://github.com/websk/php-logger/compare/2.1.2...3.0.0
 [2.1.2]: https://github.com/websk/php-logger/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/websk/php-logger/compare/2.1.0...2.1.1

@@ -4,7 +4,7 @@ return [
     'settings' => [
         'displayErrorDetails' => false,
         'cache' => [
-            'engine' => \WebSK\Cache\Engines\Memcache::class,
+            'engine' => \WebSK\Cache\Engines\Memcached::class,
             'cache_key_prefix' => 'websk_logger',
             'servers' => [
                 [
