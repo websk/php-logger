@@ -7,7 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use WebSK\CRUD\CRUD;
 use WebSK\CRUD\Table\CRUDTable;
-use WebSK\CRUD\Table\Filters\CRUDTableFilterEqualTimestampIntervalInline;
+use WebSK\Logger\Table\AccessibleTimestampIntervalFilter;
 use WebSK\CRUD\Table\Filters\CRUDTableFilterLike;
 use WebSK\Logger\LoggerConfig;
 use WebSK\Views\LayoutDTO;
@@ -85,7 +85,7 @@ class ObjectEntriesListHandler extends BaseHandler
                     'Можно указать только часть объекта, например, User.1'
                 ),
                 new CRUDTableFilterLike(self::FILTER_USER_IP, 'User IP', LoggerEntry::_USER_IP),
-                new CRUDTableFilterEqualTimestampIntervalInline(
+                new AccessibleTimestampIntervalFilter(
                     self::FILTER_CREATED_AT_TS_START,
                     self::FILTER_CREATED_AT_TS_END,
                     'Дата создания',

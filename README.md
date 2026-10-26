@@ -113,6 +113,8 @@ The layout loads the following assets:
 
 The bundled `views/layouts/layout.main.tpl.php` emits the corresponding `<link>` and `<script>` tags. Applications using this layout do not need to add the tags again; the files only need to be available at the documented URLs.
 
+The asset build also publishes `bootstrap/js/bootstrap.min.js` as a compatibility alias. The bundled layout uses the canonical `bootstrap.bundle.min.js` path. Both JavaScript files reference the same `bootstrap.bundle.min.js.map`, and the asset check verifies every local source-map reference.
+
 `CompareHTML` additionally injects these local resources when the first comparison is rendered:
 
 | Source | Public path |

@@ -9,6 +9,7 @@ const nodeModulesRoot = path.join(projectRoot, 'node_modules');
 const assetsRoot = path.join(projectRoot, 'public/assets/libraries');
 
 const copies = [
+    ['bootstrap/dist/js/bootstrap.bundle.min.js', 'bootstrap/js/bootstrap.bundle.min.js'],
     ['bootstrap/dist/js/bootstrap.bundle.min.js', 'bootstrap/js/bootstrap.min.js'],
     ['bootstrap/dist/js/bootstrap.bundle.min.js.map', 'bootstrap/js/bootstrap.bundle.min.js.map'],
     ['bootstrap/dist/css/bootstrap.min.css', 'bootstrap/css/bootstrap.min.css'],
@@ -71,6 +72,31 @@ async function digest(filePath) {
     return createHash('sha256').update(await readFile(filePath)).digest('hex');
 }
 
+async function assertSourceMapsExist(root) {
+    const rootPath = path.resolve(root);
+    for (const file of await listFiles(root)) {
+        if (!file.endsWith('.css') && !file.endsWith('.js')) {
+            continue;
+        }
+        const contents = await readFile(path.join(root, file), 'utf8');
+        for (const match of contents.matchAll(/sourceMappingURL=([^\s*]+)/g)) {
+            const reference = match[1].split(/[?#]/, 1)[0];
+            if (reference.startsWith('data:') || reference.includes('://')) {
+                continue;
+            }
+            const sourceMapPath = path.resolve(path.dirname(path.join(root, file)), reference);
+            if (sourceMapPath !== rootPath && !sourceMapPath.startsWith(rootPath + path.sep)) {
+                throw new Error(`Source map escapes the assets directory: ${file} -> ${reference}`);
+            }
+            try {
+                await access(sourceMapPath);
+            } catch {
+                throw new Error(`Missing source map: ${file} -> ${reference}`);
+            }
+        }
+    }
+}
+
 async function verifyAssets() {
     const temporaryRoot = await mkdtemp(path.join(tmpdir(), 'php-logger-assets-'));
     try {
@@ -85,6 +111,7 @@ async function verifyAssets() {
                 throw new Error(`Generated asset differs: ${file}`);
             }
         }
+        await assertSourceMapsExist(assetsRoot);
         console.log(`Assets are complete and reproducible: ${actualFiles.length} files.`);
     } finally {
         await rm(temporaryRoot, {recursive: true, force: true});
@@ -95,5 +122,6 @@ if (process.argv.includes('--check')) {
     await verifyAssets();
 } else {
     await buildAssets(assetsRoot);
+    await assertSourceMapsExist(assetsRoot);
     console.log(`Built ${(await listFiles(assetsRoot)).length} frontend asset files.`);
 }

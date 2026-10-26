@@ -6,6 +6,20 @@ The release history was reconstructed from remote Git tags, GitHub Releases, and
 
 ## [Unreleased]
 
+## [4.0.1] - 2026-10-26
+
+### Changed
+
+- Updated `websk/php-crud` from 4.0.0 to 4.0.1.
+- Switched the demo layout to the canonical `bootstrap.bundle.min.js` asset while retaining the previous path as a compatibility alias.
+
+### Fixed
+
+- Added frontend asset validation for every local source-map reference.
+- Added a favicon so the demo loads without a browser-console 404.
+- Added programmatic labels to both date-interval filter inputs.
+- Integrated CRUD 4.0.1 fixes for accessible controls, validation markup, responsive tables, and the default Tokenize field background.
+
 ## [4.0.0] - 2026-10-25
 
 ### Changed
@@ -151,7 +165,8 @@ The release history was reconstructed from remote Git tags, GitHub Releases, and
 
 - Initial release of the entity logger, including logger entities, repository and service classes, routes, request handlers, rendering, demo bootstrap, and schema dump.
 
-[Unreleased]: https://github.com/websk/php-logger/compare/4.0.0...HEAD
+[Unreleased]: https://github.com/websk/php-logger/compare/4.0.1...HEAD
+[4.0.1]: https://github.com/websk/php-logger/compare/4.0.0...4.0.1
 [4.0.0]: https://github.com/websk/php-logger/compare/3.0.0...4.0.0
 [3.0.0]: https://github.com/websk/php-logger/compare/2.1.2...3.0.0
 [2.1.2]: https://github.com/websk/php-logger/compare/2.1.1...2.1.2
